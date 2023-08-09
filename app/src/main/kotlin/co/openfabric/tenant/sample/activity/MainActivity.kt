@@ -2,37 +2,53 @@ package co.openfabric.tenant.sample.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.adapter.GridAdapter
 import co.openfabric.tenant.sample.model.Merchant
+import co.openfabric.tenant.sample.provider.NetworkProvider
+import co.openfabric.tenant.sample.service.ApiService
+import co.openfabric.tenant.sample.service.ApiServiceImpl
 import co.openfabric.unilateral.sample.R
-import co.openfabric.unilateral.sdk.TenantConfiguration
-import co.openfabric.unilateral.sdk.UnilateralSDK
-import java.net.URL
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: GridAdapter
+    private val items = mutableListOf<Merchant>()
+    private val apiService = NetworkProvider.retrofit.create(ApiService::class.java)
+    private val apiServiceImpl = ApiServiceImpl(apiService)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
+        fetchMerchants()
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
-        // Replace the following list with your data source
-        val items = listOf(
-            Merchant("Lazada", R.drawable.lazada, "https://www.lazada.vn/"),
-            Merchant("Shopee", R.drawable.shopee, "https://shopee.vn/")
-        )
-
         val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
         recyclerView.layoutManager = gridLayoutManager
 
-        val adapter = GridAdapter(this, items)
+        adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
+    }
+
+    private fun fetchMerchants() {
+        println("Start to fetch merchants")
+        apiServiceImpl.fetchMerchants(
+            onSuccess = { merchants ->
+                items.addAll(merchants)
+                adapter.notifyDataSetChanged()
+            },
+            onError = { error ->
+                println(error)
+            }
+        )
     }
 }
