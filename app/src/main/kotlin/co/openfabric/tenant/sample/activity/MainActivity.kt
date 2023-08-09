@@ -14,17 +14,9 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
 
-//    val sdk = UnilateralSDK(
-//        TenantConfiguration(
-//            id = "ffb4313d-c03d-4aae-828a-abc51a9e3015",
-//            name = "Home Credit",
-//            logo = URL(""),
-//        )
-//    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
         setupRecyclerView()
@@ -40,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
         recyclerView.layoutManager = gridLayoutManager
 
-        val adapter = GridAdapter(items)
+        val adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
     }
 }

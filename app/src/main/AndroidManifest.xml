@@ -23,13 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="co.openfabric.tenant.sample.activity.WebViewActivity"
+            android:name="co.openfabric.unilateral.sdk.webview.WebViewActivity"
             android:exported="true"
             android:label="Web View Activity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
     </application>

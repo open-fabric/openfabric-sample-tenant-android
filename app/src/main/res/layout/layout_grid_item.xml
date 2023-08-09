@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:layout_margin="8dp"
     android:background="@drawable/grid_item_border"
     android:padding="16dp">
 
@@ -21,5 +22,5 @@
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
         android:text="Grid Item Title"
-        android:textSize="16sp" />
+        android:textSize="24sp" />
 </RelativeLayout>

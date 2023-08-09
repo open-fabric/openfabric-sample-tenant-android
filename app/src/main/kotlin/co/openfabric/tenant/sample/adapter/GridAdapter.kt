@@ -1,18 +1,18 @@
 package co.openfabric.tenant.sample.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import co.openfabric.tenant.sample.activity.WebViewActivity
 import co.openfabric.tenant.sample.model.Merchant
 import co.openfabric.unilateral.sample.R
+import co.openfabric.unilateral.sdk.webview.WebViewHelper
 
-class GridAdapter(private val items: List<Merchant>) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
+
+class GridAdapter(private val context: Context, private val items: List<Merchant>) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -23,16 +23,10 @@ class GridAdapter(private val items: List<Merchant>) : RecyclerView.Adapter<Grid
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val selectedItem = items[position]
-                    openWebView(itemView.context, selectedItem.url)
+                    WebViewHelper.openWebViewInApp(context, selectedItem.url)
                 }
             }
         }
-    }
-
-    private fun openWebView(context: Context, url: String) {
-        val webViewIntent = Intent(context, WebViewActivity::class.java)
-        webViewIntent.putExtra("url", url)
-        context.startActivity(webViewIntent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
