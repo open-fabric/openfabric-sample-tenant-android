@@ -1,6 +1,7 @@
 package co.openfabric.tenant.sample.activity
 
 import android.os.Bundle
+import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
@@ -17,7 +18,20 @@ class WebViewActivity : AppCompatActivity() {
         val url = intent.getStringExtra("url")
 
         if (url != null) {
-            webView.settings.javaScriptEnabled = true
+            webView.apply {
+                this.settings.loadsImagesAutomatically = true
+                this.settings.javaScriptEnabled = true
+                this.settings.setSupportZoom(true)
+                this.settings.builtInZoomControls = true
+                this.settings.displayZoomControls = false
+                this.settings.useWideViewPort = true
+                this.settings.loadWithOverviewMode = true
+                this.settings.domStorageEnabled = true
+                this.settings.databaseEnabled = true
+                this.settings.javaScriptCanOpenWindowsAutomatically = true
+                this.settings.setSupportMultipleWindows(true)
+                this.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+            }
             webView.webViewClient = WebViewClient()
             webView.loadUrl(url)
         }
