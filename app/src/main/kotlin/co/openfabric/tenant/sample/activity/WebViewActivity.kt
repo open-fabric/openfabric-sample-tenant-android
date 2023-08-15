@@ -1,21 +1,19 @@
 package co.openfabric.tenant.sample.activity
 
-import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.webkit.WebView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import co.openfabric.tenant.sample.model.TransactionRequest
 import co.openfabric.tenant.sample.provider.NetworkProvider
 import co.openfabric.tenant.sample.service.ApiService
-import co.openfabric.tenant.sample.service.ApiServiceImpl
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
@@ -38,31 +36,14 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var closeButton: AppCompatButton
     private lateinit var fab: FloatingActionButton
     private val apiService = NetworkProvider.retrofit.create(ApiService::class.java)
-    private val apiServiceImpl = ApiServiceImpl(apiService)
 
-    private fun createTransaction(request: TransactionRequest) {
-        println("Start to create transaction")
-        apiServiceImpl.createTransaction(
-            request = request,
-            onSuccess = { transactionResponse ->
-                // Handle the success response
-                println("Transaction created: $transactionResponse")
-            },
-            onError = { error ->
-                // Handle the error response
-                println("Error: $error")
-            }
-        )
-    }
-
-    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
 
         val webView = findViewById<WebView>(R.id.webView)
-        closeButton = findViewById<AppCompatButton>(R.id.backButton)
-        fab = findViewById<FloatingActionButton>(R.id.fab)
+        closeButton = findViewById(R.id.backButton)
+        fab = findViewById(R.id.fab)
         fab.setImageResource(R.drawable.homecredit)
 
         val url = intent.getStringExtra("url")
@@ -87,17 +68,14 @@ class WebViewActivity : AppCompatActivity() {
             }
         })
 
+//        fab.setOnTouchListener(FloatingActionButtonTouchListener())
         fab.setOnClickListener {
-            if (!hasOverlayPermission()) {
-                requestOverlayPermission()
+            if (hasOverlayPermission()) {
+                showOverlayDialog()
             } else {
-                showOverlay()
+                requestOverlayPermission()
             }
-            var tempTransactionRequest: TransactionRequest = TransactionRequest("", "")
-            createTransaction(tempTransactionRequest)
         }
-
-        fab.setOnTouchListener(FloatingActionButtonTouchListener())
     }
 
     private inner class FloatingActionButtonTouchListener : View.OnTouchListener {
@@ -133,14 +111,23 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     private fun requestOverlayPermission() {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:" + packageName)
-        )
+        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
         startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE)
     }
 
-    private fun showOverlay() {
-        Toast.makeText(this, "Overlay action executed", Toast.LENGTH_SHORT).show()
+    private fun showOverlayDialog() {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.layout_dialog)
+
+        dialog.setCancelable(true)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        dialog.show()
     }
+
 }
