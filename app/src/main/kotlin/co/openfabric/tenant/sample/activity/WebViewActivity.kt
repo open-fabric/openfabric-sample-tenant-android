@@ -12,6 +12,10 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import co.openfabric.tenant.sample.model.TransactionRequest
+import co.openfabric.tenant.sample.provider.NetworkProvider
+import co.openfabric.tenant.sample.service.ApiService
+import co.openfabric.tenant.sample.service.ApiServiceImpl
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
@@ -33,6 +37,23 @@ class WebViewActivity : AppCompatActivity() {
 
     private lateinit var closeButton: AppCompatButton
     private lateinit var fab: FloatingActionButton
+    private val apiService = NetworkProvider.retrofit.create(ApiService::class.java)
+    private val apiServiceImpl = ApiServiceImpl(apiService)
+
+    private fun createTransaction(request: TransactionRequest) {
+        println("Start to create transaction")
+        apiServiceImpl.createTransaction(
+            request = request,
+            onSuccess = { transactionResponse ->
+                // Handle the success response
+                println("Transaction created: $transactionResponse")
+            },
+            onError = { error ->
+                // Handle the error response
+                println("Error: $error")
+            }
+        )
+    }
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +93,8 @@ class WebViewActivity : AppCompatActivity() {
             } else {
                 showOverlay()
             }
+            var tempTransactionRequest: TransactionRequest = TransactionRequest("", "")
+            createTransaction(tempTransactionRequest)
         }
 
         fab.setOnTouchListener(FloatingActionButtonTouchListener())
