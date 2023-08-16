@@ -1,18 +1,17 @@
 package co.openfabric.tenant.sample.service
 
 import co.openfabric.tenant.sample.model.Merchant
-import co.openfabric.tenant.sample.provider.NetworkProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ApiServiceImpl(private val apiService: ApiService) {
+class ApiServiceImpl(private val tenantApi: TenantApi) {
 
     fun fetchMerchants(
         onSuccess: (List<Merchant>) -> Unit,
         onError: (String) -> Unit
     ) {
-        apiService.getMerchants().enqueue(object : Callback<List<Merchant>> {
+        tenantApi.getMerchants().enqueue(object : Callback<List<Merchant>> {
             override fun onResponse(call: Call<List<Merchant>>, response: Response<List<Merchant>>) {
                 if (response.isSuccessful) {
                     val body = response.body()

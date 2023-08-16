@@ -23,16 +23,15 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val selectedItem = items[position]
-                    openWebView(itemView.context, selectedItem.url)
+                    openWebView(itemView.context, items[position])
                 }
             }
         }
     }
 
-    private fun openWebView(context: Context, url: String) {
+    private fun openWebView(context: Context, merchant: Merchant) {
         val webViewIntent = Intent(context, WebViewActivity::class.java)
-        webViewIntent.putExtra("url", url)
+        webViewIntent.putExtra(WebViewActivity.INTENT_MERCHANT, merchant)
         context.startActivity(webViewIntent)
     }
 
@@ -43,7 +42,7 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.imageView.setImageResource(item.logo)
+        //holder.imageView.setImageResource(item.logo)
         holder.textViewTitle.text = item.name
     }
 

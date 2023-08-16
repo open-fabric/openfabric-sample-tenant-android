@@ -1,3 +1,10 @@
 package co.openfabric.tenant.sample.model
 
-data class Merchant(val name: String, val logo: Int, val url: String, val accessToken: String)
+import java.io.Serializable
+import java.net.URL
+
+data class Merchant(
+    val name: String,
+    val url: URL,
+    val accessToken: String
+): Serializable
