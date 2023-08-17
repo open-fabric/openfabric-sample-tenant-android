@@ -11,15 +11,19 @@ import android.webkit.WebView
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import co.openfabric.slice.apis.models.v1.apis.ClientTransactionRequest
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
 import co.openfabric.tenant.sample.model.Merchant
+import co.openfabric.tenant.sample.model.TransactionRequest
 import co.openfabric.unilateral.sample.R
+import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.UnilateralSDKListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.net.URL
+import java.util.concurrent.Future
 
 class WebViewActivity : AppCompatActivity() {
     companion object {
@@ -30,7 +34,8 @@ class WebViewActivity : AppCompatActivity() {
         TenantConfiguration(
             "Home Credit",
             URL("https://homecredit.vn/img/logo-hc-main.png"),
-        )
+        ),
+        Environment.DEV
     )
 
     private val OVERLAY_PERMISSION_REQUEST_CODE = 123
@@ -62,13 +67,13 @@ class WebViewActivity : AppCompatActivity() {
                 hideOverlayButton()
             }
 
-            override fun onTransactionApprovalRequest(transaction: ClientTransactionResponse) {
+            override fun onTransactionApprovalRequest(request: ClientTransactionRequest, response: Future<ClientTransactionResponse>) {
                 val intent = Intent(view, ApproveActivity::class.java)
-                var currency = transaction.currency
+                var currency = request.currency
                 var currencySymbol = "$"
                 intent.putExtra("currency",  currency)
                 intent.putExtra("currencySymbol",  currencySymbol)
-                intent.putExtra("amount",  transaction.amount)
+                intent.putExtra("amount",  request.amount)
                 view.startActivityForResult(intent, 1)
             }
 
