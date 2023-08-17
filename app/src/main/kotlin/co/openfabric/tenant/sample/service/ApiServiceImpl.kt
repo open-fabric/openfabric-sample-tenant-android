@@ -35,29 +35,29 @@ class ApiServiceImpl(private val tenantApi: TenantApi) {
         })
     }
 
-    fun createTransaction(
-        request: TransactionRequest,
-        onSuccess: (TransactionResponse) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        apiService.createTransaction(request).enqueue(object : Callback<TransactionResponse> {
-            override fun onResponse(call: Call<TransactionResponse>, response: Response<TransactionResponse>) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
-                        println("Transaction created: $body")
-                        onSuccess(body)
-                    }
-                } else {
-                    println("Error response: ${response.code()}")
-                    onError("Error response: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
-                println("API call failed: ${t.message}")
-                onError("API call failed: ${t.message}")
-            }
-        })
-    }
+//    fun createTransaction(
+//        request: TransactionRequest,
+//        onSuccess: (TransactionResponse) -> Unit,
+//        onError: (String) -> Unit
+//    ) {
+//        apiService.createTransaction(request).enqueue(object : Callback<TransactionResponse> {
+//            override fun onResponse(call: Call<TransactionResponse>, response: Response<TransactionResponse>) {
+//                if (response.isSuccessful) {
+//                    val body = response.body()
+//                    if (body != null) {
+//                        println("Transaction created: $body")
+//                        onSuccess(body)
+//                    }
+//                } else {
+//                    println("Error response: ${response.code()}")
+//                    onError("Error response: ${response.code()}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
+//                println("API call failed: ${t.message}")
+//                onError("API call failed: ${t.message}")
+//            }
+//        })
+//    }
 }
