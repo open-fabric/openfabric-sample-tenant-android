@@ -7,10 +7,10 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface ApiService {
+interface TenantApi {
     @GET("/api/unilateral/partners")
     fun getMerchants(): Call<List<Merchant>>
 
-    @POST("/api/unilateral/transactions")
-    fun createTransaction(request: TransactionRequest): Call<TransactionResponse>
+    @POST("/api/orchestrated/approve")
+    fun createTransaction(request: ApproveTransactionRequest): Call<?>
 }

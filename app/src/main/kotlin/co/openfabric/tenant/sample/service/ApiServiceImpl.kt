@@ -8,13 +8,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ApiServiceImpl(private val apiService: ApiService) {
+class ApiServiceImpl(private val tenantApi: TenantApi) {
 
     fun fetchMerchants(
         onSuccess: (List<Merchant>) -> Unit,
         onError: (String) -> Unit
     ) {
-        apiService.getMerchants().enqueue(object : Callback<List<Merchant>> {
+        tenantApi.getMerchants().enqueue(object : Callback<List<Merchant>> {
             override fun onResponse(call: Call<List<Merchant>>, response: Response<List<Merchant>>) {
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -35,29 +35,29 @@ class ApiServiceImpl(private val apiService: ApiService) {
         })
     }
 
-    fun createTransaction(
-        request: TransactionRequest,
-        onSuccess: (TransactionResponse) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        apiService.createTransaction(request).enqueue(object : Callback<TransactionResponse> {
-            override fun onResponse(call: Call<TransactionResponse>, response: Response<TransactionResponse>) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
-                        println("Transaction created: $body")
-                        onSuccess(body)
-                    }
-                } else {
-                    println("Error response: ${response.code()}")
-                    onError("Error response: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
-                println("API call failed: ${t.message}")
-                onError("API call failed: ${t.message}")
-            }
-        })
-    }
+//    fun createTransaction(
+//        request: TransactionRequest,
+//        onSuccess: (TransactionResponse) -> Unit,
+//        onError: (String) -> Unit
+//    ) {
+//        apiService.createTransaction(request).enqueue(object : Callback<TransactionResponse> {
+//            override fun onResponse(call: Call<TransactionResponse>, response: Response<TransactionResponse>) {
+//                if (response.isSuccessful) {
+//                    val body = response.body()
+//                    if (body != null) {
+//                        println("Transaction created: $body")
+//                        onSuccess(body)
+//                    }
+//                } else {
+//                    println("Error response: ${response.code()}")
+//                    onError("Error response: ${response.code()}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
+//                println("API call failed: ${t.message}")
+//                onError("API call failed: ${t.message}")
+//            }
+//        })
+//    }
 }
