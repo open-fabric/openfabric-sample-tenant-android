@@ -7,20 +7,28 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.adapter.GridAdapter
 import co.openfabric.tenant.sample.model.Merchant
-import co.openfabric.tenant.sample.provider.NetworkProvider
 import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
     private val items = mutableListOf<Merchant>()
 
-    private val tenantApi = NetworkProvider.retrofit.create(TenantApi::class.java)
+    val api = Retrofit.Builder()
+        .baseUrl("https://of-test-1.samples.dev.openfabric.co")
+        .client(OkHttpClient.Builder().build())
+        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+        .build()
+        .create(TenantApi::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +49,11 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun fetchMerchants() {
-        tenantApi.getMerchants().enqueue(object : Callback<List<Merchant>> {
-            override fun onResponse(call: Call<List<Merchant>>, response: Response<List<Merchant>>) {
+        api.getMerchants().enqueue(object : Callback<List<Merchant>> {
+            override fun onResponse(
+                call: Call<List<Merchant>>,
+                response: Response<List<Merchant>>
+            ) {
                 if (response.isSuccessful) {
                     response.body()?.let { items.addAll(it) }
                     adapter.notifyDataSetChanged()

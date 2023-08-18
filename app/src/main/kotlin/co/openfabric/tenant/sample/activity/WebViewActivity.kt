@@ -13,22 +13,22 @@ import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PAR
 import co.openfabric.tenant.sample.model.Merchant
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
+import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.NavigationListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import java.net.URL
 
-class WebViewActivity : AppCompatActivity(), NavigationListener {
+class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     companion object {
         const val INTENT_MERCHANT = "merchant"
     }
 
-    private var sdk: UnilateralSDK? = null
-    private var partner: PartnerConfiguration? = null
-
+    private lateinit var sdk: UnilateralSDK
     private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +52,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener {
             webView,
             Environment.DEV
         )
-        sdk!!.setNavigationListener(this)
+        sdk.setNavigationListener(this)
+
         webView.loadUrl(merchant.url.toString())
 
         findViewById<Button>(R.id.backButton).setOnClickListener {
@@ -101,5 +102,14 @@ class WebViewActivity : AppCompatActivity(), NavigationListener {
             }
         })
         fab.visibility = View.INVISIBLE
+    }
+    override fun onError(throwable: Throwable) {
+        runOnUiThread {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                throwable.localizedMessage!!,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
     }
 }

@@ -40,7 +40,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_approve)
+        setContentView(R.layout.layout_dialog)
 
         val amount = intent.getDoubleExtra(INTENT_AMOUNT, 0.0)
         val currency = intent.getStringExtra(INTENT_CURRENCY)
@@ -49,9 +49,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         sdk = UnilateralSDK.getInstance(partner)
         sdk!!.setTransactionListener(this)
 
-        findViewById<TextView>(R.id.amount).text = CURRENCY_FORMAT.format(amount)
-        findViewById<TextView>(R.id.currency).text = currency
-        findViewById<Button>(R.id.approve).setOnClickListener {
+        findViewById<TextView>(R.id.textAmountValue).text =
+            CURRENCY_FORMAT.format(amount) + currency
+        findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk!!.createTransaction()
         }
     }
@@ -65,11 +65,16 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
     }
 
     override fun onCreateTransactionSuccess(response: ClientTransactionResponse) {
-        api.approve(ApproveTransactionRequest(
-            response.id,
-            response.tenant_reference_id
-        )).enqueue(object: Callback<ApproveTransactionResponse> {
-            override fun onResponse(call: Call<ApproveTransactionResponse>, response: Response<ApproveTransactionResponse>) {
+        api.approve(
+            ApproveTransactionRequest(
+                response.id,
+                response.tenant_reference_id
+            )
+        ).enqueue(object : Callback<ApproveTransactionResponse> {
+            override fun onResponse(
+                call: Call<ApproveTransactionResponse>,
+                response: Response<ApproveTransactionResponse>
+            ) {
                 sdk!!.onTransactionApproved(
                     response.body()!!.card_fetch_token
                 )
