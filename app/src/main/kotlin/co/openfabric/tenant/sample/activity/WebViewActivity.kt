@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.UnilateralSDKListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -81,6 +83,7 @@ class WebViewActivity : AppCompatActivity() {
                 intent.putExtra("currency",  currency)
                 intent.putExtra("currencySymbol",  currencySymbol)
                 intent.putExtra("amount",  request.amount)
+                Log.d("", "${request}")
                 showOverlayDialog(intent)
             }
 
@@ -136,25 +139,41 @@ class WebViewActivity : AppCompatActivity() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.layout_dialog)
 
-        val amount = intent.getIntExtra("amount", 0)
-        val currency = intent.getStringExtra("currency")
+        val amount = intent.getDoubleExtra("amount", 0.0)
+        val currency = intent.getStringExtra("currency", )
 
         val textAmountValue = dialog.findViewById<TextView>(R.id.textAmountValue)
         textAmountValue.text = "${amount}${currency}"
 
         val btnConfirmPayment = dialog.findViewById<Button>(R.id.btnConfirmPayment)
-        val approveTransactionRequest: ApproveTransactionRequest = ApproveTransactionRequest("", "")
+        val approveTransactionRequest: ApproveTransactionRequest = ApproveTransactionRequest(
+            amount,
+            currency!!,
+            "")
+
         btnConfirmPayment.setOnClickListener {
             tenantApi.createTransaction(approveTransactionRequest).enqueue(object: Callback<ApproveTransactionResponse> {
                 override fun onResponse(
                     call: Call<ApproveTransactionResponse>,
                     response: Response<ApproveTransactionResponse>
                 ) {
-                    TODO("Not yet implemented")
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            val approveTransactionResponse = ApproveTransactionResponse(
+                                it.account_reference_id,
+                                it.transaction_id,
+                                it.amount,
+                                it.currency,
+                                it.status
+                            )
+                        }
+                    } else {
+                        displayError(RuntimeException("Error response: ${response.code()}"))
+                    }
                 }
 
                 override fun onFailure(call: Call<ApproveTransactionResponse>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    displayError(t)
                 }
 
             })
@@ -169,6 +188,14 @@ class WebViewActivity : AppCompatActivity() {
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
         dialog.show()
+    }
+
+    private fun displayError(throwable: Throwable) {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            throwable.localizedMessage!!,
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     private inner class FloatingActionButtonTouchListener : View.OnTouchListener {
