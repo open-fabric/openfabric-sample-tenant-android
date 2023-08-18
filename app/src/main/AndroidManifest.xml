@@ -42,9 +42,6 @@
         android:theme="@style/Theme.AppCompat"
         tools:targetApi="31">
         <activity
-            android:name="co.openfabric.tenant.sample.activity.ConfirmActivity"
-            android:exported="false" />
-        <activity
             android:name="co.openfabric.tenant.sample.activity.ApproveActivity"
             android:exported="false" />
         <activity

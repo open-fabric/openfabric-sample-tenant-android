@@ -1,51 +1,37 @@
 package co.openfabric.tenant.sample.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
-import co.openfabric.slice.apis.models.v1.apis.ClientTransactionRequest
-import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
+import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
+import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
+import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
 import co.openfabric.tenant.sample.model.Merchant
-import co.openfabric.tenant.sample.model.TransactionRequest
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
+import co.openfabric.unilateral.sdk.NavigationListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
-import co.openfabric.unilateral.sdk.UnilateralSDKListener
+import co.openfabric.unilateral.sdk.Website
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.net.URL
-import java.util.concurrent.Future
 
-class WebViewActivity : AppCompatActivity() {
+class WebViewActivity : AppCompatActivity(), NavigationListener {
     companion object {
         const val INTENT_MERCHANT = "merchant"
     }
 
-    private val sdk = UnilateralSDK(
-        TenantConfiguration(
-            "Home Credit",
-            URL("https://homecredit.vn/img/logo-hc-main.png"),
-        ),
-        Environment.DEV
-    )
+    private var sdk: UnilateralSDK? = null
+    private var partner: PartnerConfiguration? = null
 
-    private val OVERLAY_PERMISSION_REQUEST_CODE = 123
-
-    private lateinit var closeButton: AppCompatButton
     private lateinit var fab: FloatingActionButton
-//    private val apiService = NetworkProvider.retrofit.create(ApiService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val view = this
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
 
@@ -54,38 +40,22 @@ class WebViewActivity : AppCompatActivity() {
         val webView = findViewById<WebView>(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
 
-        sdk.configure(webView, PartnerConfiguration(
-            merchant!!.accessToken,
-            merchant.url
-        ))
-        sdk.setListener(object : UnilateralSDKListener {
-            override fun onCheckoutPage() {
-                showOverlayButton()
-            }
-
-            override fun offCheckoutPage() {
-                hideOverlayButton()
-            }
-
-            override fun onTransactionApprovalRequest(request: ClientTransactionRequest, response: Future<ClientTransactionResponse>) {
-                val intent = Intent(view, ApproveActivity::class.java)
-                var currency = request.currency
-                var currencySymbol = "$"
-                intent.putExtra("currency",  currency)
-                intent.putExtra("currencySymbol",  currencySymbol)
-                intent.putExtra("amount",  request.amount)
-                view.startActivityForResult(intent, 1)
-            }
-
-//            override fun onTransactionRequest(request: ClientTransactionRequest) {
-//                TODO("Not yet implemented")
-//            }
-        })
-
+        sdk = UnilateralSDK.initialize(
+            TenantConfiguration(
+                "Home Credit",
+                URL("https://homecredit.vn/img/logo-hc-main.png"),
+            ),
+            PartnerConfiguration(
+                merchant!!.accessToken,
+                Website.LAZADA
+            ),
+            webView,
+            Environment.DEV
+        )
+        sdk!!.setNavigationListener(this)
         webView.loadUrl(merchant.url.toString())
 
-        val backButton: Button = findViewById(R.id.backButton)
-        backButton.setOnClickListener {
+        findViewById<Button>(R.id.backButton).setOnClickListener {
             if (webView.canGoBack()) {
                 webView.goBack() // Go back in WebView history
             } else {
@@ -96,20 +66,33 @@ class WebViewActivity : AppCompatActivity() {
         setupFloatingActionButton()
     }
 
-    fun showOverlayButton() {
-        fab.visibility = View.VISIBLE
-        fab.show()
+    override fun onEnterCheckoutPage(amount: Double, currency: String) {
+        runOnUiThread {
+            fab.setOnClickListener {
+                val intent = Intent(this, ApproveActivity::class.java)
+                intent.putExtra(INTENT_AMOUNT, amount)
+                intent.putExtra(INTENT_CURRENCY, currency)
+                intent.putExtra(INTENT_PARTNER, sdk!!.partner)
+                startActivity(intent)
+            }
+
+            fab.visibility = View.VISIBLE
+            fab.show()
+        }
     }
 
-    fun hideOverlayButton() {
-        fab.visibility = View.INVISIBLE
-        fab.hide()
+    override fun onExitCheckoutPage() {
+        runOnUiThread {
+            fab.visibility = View.INVISIBLE
+            fab.hide()
+        }
     }
 
     private fun setupFloatingActionButton() {
         fab = findViewById(R.id.fab)
         fab.setImageResource(R.drawable.homecredit)
-        fab.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        fab.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 fab.layoutParams.width = fab.width * 2
                 fab.layoutParams.height = fab.height * 2
@@ -117,52 +100,6 @@ class WebViewActivity : AppCompatActivity() {
                 fab.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
-
-//        fab.setOnTouchListener(FloatingActionButtonTouchListener())
-        fab.setOnClickListener { view ->
-            sdk.startTransaction()
-        }
         fab.visibility = View.INVISIBLE
-    }
-
-    private inner class FloatingActionButtonTouchListener : View.OnTouchListener {
-        private var dx = 0
-        private var dy = 0
-
-        override fun onTouch(view: View, event: MotionEvent): Boolean {
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    dx = view.x.toInt() - event.rawX.toInt()
-                    dy = view.y.toInt() - event.rawY.toInt()
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val newX = event.rawX + dx
-                    val newY = event.rawY + dy
-
-                    val maxX = (view.parent as View).width - view.width
-                    val maxY = (view.parent as View).height - view.height
-
-                    view.animate()
-                        .x(newX.coerceIn(0f, maxX.toFloat()))
-                        .y(newY.coerceIn(0f, maxY.toFloat()))
-                        .setDuration(0)
-                        .start()
-                }
-            }
-            return true
-        }
-    }
-
-    private fun hasOverlayPermission(): Boolean {
-        return Settings.canDrawOverlays(this)
-    }
-
-    private fun requestOverlayPermission() {
-        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-        startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE)
-    }
-
-    private fun showOverlayDialog() {
-
     }
 }
