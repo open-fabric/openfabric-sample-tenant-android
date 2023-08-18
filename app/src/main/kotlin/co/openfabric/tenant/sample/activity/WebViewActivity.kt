@@ -1,20 +1,26 @@
 package co.openfabric.tenant.sample.activity
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.webkit.WebView
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionRequest
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
+import co.openfabric.tenant.sample.model.ApproveTransactionRequest
+import co.openfabric.tenant.sample.model.ApproveTransactionResponse
 import co.openfabric.tenant.sample.model.Merchant
-import co.openfabric.tenant.sample.model.TransactionRequest
+import co.openfabric.tenant.sample.provider.NetworkProvider
+import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.PartnerConfiguration
@@ -22,6 +28,10 @@ import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.UnilateralSDKListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.net.URL
 import java.util.concurrent.Future
 
@@ -40,9 +50,8 @@ class WebViewActivity : AppCompatActivity() {
 
     private val OVERLAY_PERMISSION_REQUEST_CODE = 123
 
-    private lateinit var closeButton: AppCompatButton
     private lateinit var fab: FloatingActionButton
-//    private val apiService = NetworkProvider.retrofit.create(ApiService::class.java)
+    private val tenantApi = NetworkProvider.retrofit.create(TenantApi::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val view = this
@@ -68,13 +77,13 @@ class WebViewActivity : AppCompatActivity() {
             }
 
             override fun onTransactionApprovalRequest(request: ClientTransactionRequest, response: Future<ClientTransactionResponse>) {
-                val intent = Intent(view, ApproveActivity::class.java)
                 var currency = request.currency
                 var currencySymbol = "$"
                 intent.putExtra("currency",  currency)
                 intent.putExtra("currencySymbol",  currencySymbol)
                 intent.putExtra("amount",  request.amount)
-                view.startActivityForResult(intent, 1)
+                Log.d("", "${request}")
+                showOverlayDialog(intent)
             }
 
 //            override fun onTransactionRequest(request: ClientTransactionRequest) {
@@ -125,6 +134,69 @@ class WebViewActivity : AppCompatActivity() {
         fab.visibility = View.INVISIBLE
     }
 
+    private fun showOverlayDialog(intent: Intent) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.layout_dialog)
+
+        val amount = intent.getDoubleExtra("amount", 0.0)
+        val currency = intent.getStringExtra("currency", )
+
+        val textAmountValue = dialog.findViewById<TextView>(R.id.textAmountValue)
+        textAmountValue.text = "${amount}${currency}"
+
+        val btnConfirmPayment = dialog.findViewById<Button>(R.id.btnConfirmPayment)
+        val approveTransactionRequest: ApproveTransactionRequest = ApproveTransactionRequest(
+            amount,
+            currency!!,
+            "")
+
+        btnConfirmPayment.setOnClickListener {
+            tenantApi.createTransaction(approveTransactionRequest).enqueue(object: Callback<ApproveTransactionResponse> {
+                override fun onResponse(
+                    call: Call<ApproveTransactionResponse>,
+                    response: Response<ApproveTransactionResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            val approveTransactionResponse = ApproveTransactionResponse(
+                                it.account_reference_id,
+                                it.transaction_id,
+                                it.amount,
+                                it.currency,
+                                it.status
+                            )
+                        }
+                        dialog.hide()
+                    } else {
+                        displayError(RuntimeException("Error response: ${response.code()}"))
+                    }
+                }
+
+                override fun onFailure(call: Call<ApproveTransactionResponse>, t: Throwable) {
+                    displayError(t)
+                }
+            })
+        }
+
+        dialog.setCancelable(true)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        dialog.show()
+    }
+
+    private fun displayError(throwable: Throwable) {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            throwable.localizedMessage!!,
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
+
     private inner class FloatingActionButtonTouchListener : View.OnTouchListener {
         private var dx = 0
         private var dy = 0
@@ -160,9 +232,5 @@ class WebViewActivity : AppCompatActivity() {
     private fun requestOverlayPermission() {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
         startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE)
-    }
-
-    private fun showOverlayDialog() {
-
     }
 }
