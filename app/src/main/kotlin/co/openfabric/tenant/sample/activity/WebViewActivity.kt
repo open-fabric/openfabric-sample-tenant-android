@@ -14,7 +14,6 @@ import android.webkit.WebView
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionRequest
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
 import co.openfabric.tenant.sample.model.ApproveTransactionRequest
@@ -167,6 +166,7 @@ class WebViewActivity : AppCompatActivity() {
                                 it.status
                             )
                         }
+                        dialog.hide()
                     } else {
                         displayError(RuntimeException("Error response: ${response.code()}"))
                     }
@@ -175,7 +175,6 @@ class WebViewActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<ApproveTransactionResponse>, t: Throwable) {
                     displayError(t)
                 }
-
             })
         }
 
