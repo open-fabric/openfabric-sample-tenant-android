@@ -2,7 +2,11 @@ package co.openfabric.tenant.sample.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.adapter.GridAdapter
@@ -21,6 +25,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
+    private lateinit var loadingIndicator: ProgressBar
+    private lateinit var toolbar: Toolbar
+
     private val items = mutableListOf<Merchant>()
 
     val api = Retrofit.Builder()
@@ -35,16 +42,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
-        fetchMerchants()
-        setupRecyclerView()
-    }
 
-    private fun setupRecyclerView() {
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        loadingIndicator = findViewById(R.id.loadingIndicator)
+        loadingIndicator.visibility = View.VISIBLE
+
         val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
         recyclerView.layoutManager = gridLayoutManager
 
         adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
+
+        // Show loading indicator
+        loadingIndicator.visibility = View.VISIBLE
+
+        // Simulate a loading delay of 5 seconds
+        Handler().postDelayed({
+            fetchMerchants()
+            loadingIndicator.visibility = View.GONE
+        }, 3000) // Delay for 5000 milliseconds (5 seconds)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -54,9 +72,12 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Merchant>>,
                 response: Response<List<Merchant>>
             ) {
+
                 if (response.isSuccessful) {
-                    response.body()?.let { items.addAll(it) }
-                    adapter.notifyDataSetChanged()
+                    response.body()?.let {
+                        items.addAll(it)
+                        adapter.notifyDataSetChanged()
+                    }
                 } else {
                     displayError(RuntimeException("Error response: ${response.code()}"))
                 }

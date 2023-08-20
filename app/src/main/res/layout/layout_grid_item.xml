@@ -7,7 +7,7 @@
     android:padding="16dp">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/itemImageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
@@ -15,12 +15,13 @@
         android:src="@drawable/sample_image" />
 
     <TextView
-        android:id="@+id/textViewTitle"
+        android:id="@+id/itemTitleView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imageView"
+        android:layout_below="@id/itemImageView"
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
         android:text="Grid Item Title"
+        android:textStyle="bold"
         android:textSize="24sp" />
 </RelativeLayout>

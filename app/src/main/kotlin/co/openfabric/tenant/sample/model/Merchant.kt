@@ -4,7 +4,7 @@ import java.io.Serializable
 import java.net.URL
 
 data class Merchant(
-    val name: String,
+    var name: String,
     val url: URL,
     val accessToken: String
 ): Serializable

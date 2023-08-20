@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#CB0C2C</color>
+    <color name="colorPrimaryDark">#C80F2E</color>
+    <color name="colorAccent">#00FF00</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="item_background_color">#2CA472</color>
     <color name="success">#00A933</color>
+    <color name="lazada">#9100FF</color>
+    <color name="shopee">#FFA200</color>
 </resources>

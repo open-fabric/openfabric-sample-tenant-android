@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
@@ -26,10 +26,12 @@ import java.net.URL
 class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     companion object {
         const val INTENT_MERCHANT = "merchant"
+        const val INTENT_LABEL = "label"
     }
 
     private lateinit var sdk: UnilateralSDK
     private lateinit var fab: FloatingActionButton
+    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,11 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         val webView = findViewById<WebView>(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
+
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.title = intent.getStringExtra(INTENT_LABEL)
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
@@ -55,14 +62,6 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.setNavigationListener(this)
 
         webView.loadUrl(merchant.url.toString())
-
-        findViewById<Button>(R.id.backButton).setOnClickListener {
-            if (webView.canGoBack()) {
-                webView.goBack() // Go back in WebView history
-            } else {
-                finish() // Finish the activity if WebView history is empty
-            }
-        }
 
         setupFloatingActionButton()
     }
