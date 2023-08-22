@@ -42,8 +42,9 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
+                "Home Credit Qwarta",
+                URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
                 "Home Credit",
-                URL("https://homecredit.vn/img/logo-hc-main.png"),
             ),
             PartnerConfiguration(
                 merchant!!.accessToken,
@@ -52,6 +53,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             webView,
             Environment.DEV
         )
+//        sdk.setDebug(true)
         sdk.setNavigationListener(this)
 
         webView.loadUrl(merchant.url.toString())
