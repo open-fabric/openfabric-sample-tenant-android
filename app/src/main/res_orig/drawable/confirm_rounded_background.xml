@@ -1,9 +1,0 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/confirm_rounded_background">
-    <corners
-        android:bottomLeftRadius="0dp"
-        android:bottomRightRadius="0dp"
-        android:topLeftRadius="54dp"
-        android:topRightRadius="54dp" />
-    <solid android:color="#00f" />
-</shape>
