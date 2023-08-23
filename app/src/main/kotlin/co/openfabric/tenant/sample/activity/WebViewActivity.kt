@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
+import android.widget.Button
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
@@ -19,7 +21,6 @@ import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.net.URL
 
@@ -30,7 +31,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
 
     private lateinit var sdk: UnilateralSDK
-    private lateinit var fab: FloatingActionButton
+    private lateinit var overlayLayout: FrameLayout
+    private lateinit var overlayButton: Button
     private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +47,20 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationIcon(R.drawable.ic_left)
+        toolbar.setNavigationOnClickListener(View.OnClickListener() {
+            onBackPressed()
+        })
+
         supportActionBar?.title = intent.getStringExtra(INTENT_LABEL)
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
                 "Home Credit Qwarta",
                 URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                "Home Credit",
             ),
             PartnerConfiguration(
                 merchant!!.accessToken,
@@ -70,7 +79,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
     override fun onEnterCheckoutPage(amount: Double, currency: String) {
         runOnUiThread {
-            fab.setOnClickListener {
+            overlayButton = findViewById(R.id.overlayButton)
+            overlayButton.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
                 intent.putExtra(INTENT_AMOUNT, amount)
                 intent.putExtra(INTENT_CURRENCY, currency)
@@ -78,31 +88,28 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 startActivity(intent)
             }
 
-            fab.visibility = View.VISIBLE
-            fab.show()
+            overlayLayout.visibility = View.VISIBLE
         }
     }
 
     override fun onExitCheckoutPage() {
         runOnUiThread {
-            fab.visibility = View.INVISIBLE
-            fab.hide()
+            overlayLayout.visibility = View.INVISIBLE
         }
     }
 
     private fun setupFloatingActionButton() {
-        fab = findViewById(R.id.fab)
-        fab.setImageResource(R.drawable.homecredit)
-        fab.viewTreeObserver.addOnGlobalLayoutListener(object :
+        overlayLayout = findViewById(R.id.overlayLayout)
+        overlayLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                fab.layoutParams.width = fab.width * 2
-                fab.layoutParams.height = fab.height * 2
-                fab.requestLayout()
-                fab.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                overlayLayout.layoutParams.width = overlayLayout.width * 2
+                overlayLayout.layoutParams.height = overlayLayout.height * 2
+                overlayLayout.requestLayout()
+                overlayLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
-        fab.visibility = View.INVISIBLE
+        overlayLayout.visibility = View.INVISIBLE
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {

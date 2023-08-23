@@ -2,6 +2,7 @@ package co.openfabric.tenant.sample.activity
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
@@ -40,7 +41,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.layout_dialog)
+        setContentView(R.layout.activity_approve)
 
         val amount = intent.getDoubleExtra(INTENT_AMOUNT, 0.0)
         val currency = intent.getStringExtra(INTENT_CURRENCY)
@@ -49,10 +50,13 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         sdk = UnilateralSDK.getInstance(partner)
         sdk!!.setTransactionListener(this)
 
-        findViewById<TextView>(R.id.textAmountValue).text =
+        findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(amount) + currency
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk!!.createTransaction()
+        }
+        findViewById<ImageView>(R.id.btnClose).setOnClickListener {
+            finish()
         }
     }
 

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,8 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
-    private lateinit var loadingIndicator: ProgressBar
     private lateinit var toolbar: Toolbar
+    private lateinit var loadingDialog: LoadingDialog
 
     private val items = mutableListOf<Merchant>()
 
@@ -46,8 +45,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        loadingIndicator = findViewById(R.id.loadingIndicator)
-        loadingIndicator.visibility = View.VISIBLE
+        loadingDialog = LoadingDialog(this)
 
         val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
         recyclerView.layoutManager = gridLayoutManager
@@ -56,13 +54,21 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         // Show loading indicator
-        loadingIndicator.visibility = View.VISIBLE
+        showLoadingDialog()
 
         // Simulate a loading delay of 5 seconds
         Handler().postDelayed({
             fetchMerchants()
-            loadingIndicator.visibility = View.GONE
-        }, 3000) // Delay for 5000 milliseconds (5 seconds)
+            hideLoadingDialog()
+        }, 5000) // Delay for 5000 milliseconds (5 seconds)
+    }
+
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+    }
+
+    private fun hideLoadingDialog() {
+        loadingDialog.dismiss()
     }
 
     @SuppressLint("NotifyDataSetChanged")
