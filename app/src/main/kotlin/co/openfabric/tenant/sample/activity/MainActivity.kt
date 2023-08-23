@@ -53,22 +53,8 @@ class MainActivity : AppCompatActivity() {
         adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
 
-        // Show loading indicator
-        showLoadingDialog()
 
-        // Simulate a loading delay of 5 seconds
-        Handler().postDelayed({
-            fetchMerchants()
-            hideLoadingDialog()
-        }, 5000) // Delay for 5000 milliseconds (5 seconds)
-    }
-
-    private fun showLoadingDialog() {
-        loadingDialog.show()
-    }
-
-    private fun hideLoadingDialog() {
-        loadingDialog.dismiss()
+        fetchMerchants()
     }
 
     @SuppressLint("NotifyDataSetChanged")
