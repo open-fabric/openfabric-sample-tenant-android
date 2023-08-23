@@ -40,6 +40,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         .build()
         .create(TenantApi::class.java)
     private lateinit var sdk: UnilateralSDK
+    private lateinit var dialog: LoadingDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +61,18 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
             CURRENCY_FORMAT.format(amount) + currency
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
+
+            // Show loading dialog, since it will take up to 10s to process the transaction
+            dialog = LoadingDialog(this)
+            dialog.show()
         }
     }
 
     override fun onCardDetailsFilled() {
-        finish()
+        runOnUiThread {
+            dialog.hide()
+            finish()
+        }
     }
 
     override fun onCreateTransactionFailed(throwable: Throwable) {
