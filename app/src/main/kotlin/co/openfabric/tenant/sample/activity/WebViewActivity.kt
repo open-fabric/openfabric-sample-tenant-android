@@ -2,11 +2,14 @@ package co.openfabric.tenant.sample.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
@@ -19,32 +22,36 @@ import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.net.URL
 
 class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     companion object {
         const val INTENT_MERCHANT = "merchant"
+        const val INTENT_LABEL = "label"
     }
 
     private lateinit var sdk: UnilateralSDK
-    private lateinit var fab: FloatingActionButton
+    private lateinit var webView: WebView
+    private lateinit var overlayLayout: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_webview)
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        title = "Lazada"
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val webView = findViewById<WebView>(R.id.webView)
+        webView = findViewById(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
                 "Home Credit Qwarta",
                 URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                "Home Credit",
+                "Home Credit"
             ),
             PartnerConfiguration(
                 merchant!!.accessToken,
@@ -58,52 +65,42 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         webView.loadUrl(merchant.url.toString())
 
-        findViewById<Button>(R.id.backButton).setOnClickListener {
-            if (webView.canGoBack()) {
-                webView.goBack() // Go back in WebView history
-            } else {
-                finish() // Finish the activity if WebView history is empty
-            }
-        }
-
-        setupFloatingActionButton()
+        setupOverlayButton()
     }
 
     override fun onEnterCheckoutPage(amount: Double, currency: String) {
         runOnUiThread {
-            fab.setOnClickListener {
+            overlayLayout = findViewById(R.id.overlay_button)
+            overlayLayout.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
                 intent.putExtra(INTENT_AMOUNT, amount)
                 intent.putExtra(INTENT_CURRENCY, currency)
-                intent.putExtra(INTENT_PARTNER, sdk!!.partner)
+                intent.putExtra(INTENT_PARTNER, sdk.partner)
                 startActivity(intent)
             }
 
-            fab.visibility = View.VISIBLE
-            fab.show()
+            overlayLayout.visibility = View.VISIBLE
         }
     }
 
     override fun onExitCheckoutPage() {
         runOnUiThread {
-            fab.visibility = View.INVISIBLE
-            fab.hide()
+            overlayLayout.visibility = View.INVISIBLE
         }
     }
 
-    private fun setupFloatingActionButton() {
-        fab = findViewById(R.id.fab)
-        fab.setImageResource(R.drawable.homecredit)
-        fab.viewTreeObserver.addOnGlobalLayoutListener(object :
+    private fun setupOverlayButton() {
+        overlayLayout = findViewById(R.id.overlay_button)
+        overlayLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                fab.layoutParams.width = fab.width * 2
-                fab.layoutParams.height = fab.height * 2
-                fab.requestLayout()
-                fab.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                overlayLayout.layoutParams.width = overlayLayout.width * 2
+                overlayLayout.layoutParams.height = overlayLayout.height * 2
+                overlayLayout.requestLayout()
+                overlayLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
-        fab.visibility = View.INVISIBLE
+        overlayLayout.visibility = View.INVISIBLE
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {
@@ -112,6 +109,20 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 throwable.localizedMessage!!,
                 Snackbar.LENGTH_LONG
             ).show()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                if (webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    finish()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

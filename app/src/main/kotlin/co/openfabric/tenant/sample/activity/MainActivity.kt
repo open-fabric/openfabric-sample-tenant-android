@@ -21,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
+
     private val items = mutableListOf<Merchant>()
 
     val api = Retrofit.Builder()
@@ -35,16 +36,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
-        fetchMerchants()
-        setupRecyclerView()
-    }
-
-    private fun setupRecyclerView() {
-        val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
-        recyclerView.layoutManager = gridLayoutManager
-
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
         adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
+
+        fetchMerchants()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -54,9 +50,12 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Merchant>>,
                 response: Response<List<Merchant>>
             ) {
+
                 if (response.isSuccessful) {
-                    response.body()?.let { items.addAll(it) }
-                    adapter.notifyDataSetChanged()
+                    response.body()?.let {
+                        items.addAll(it)
+                        adapter.notifyDataSetChanged()
+                    }
                 } else {
                     displayError(RuntimeException("Error response: ${response.code()}"))
                 }
