@@ -20,4 +20,5 @@
     <string name="home_credit">Home Credit</string>
     <string name="lazada_logo">Lazada logo</string>
     <string name="call_to_action_text">Tap here to pay with</string>
+    <string name="action_cancel">Cancel</string>
 </resources>

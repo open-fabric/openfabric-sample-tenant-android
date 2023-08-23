@@ -1,8 +1,10 @@
 package co.openfabric.tenant.sample.activity
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
@@ -31,16 +33,20 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         val CURRENCY_FORMAT = DecimalFormat("#,###.00")
     }
 
-    val api = Retrofit.Builder()
+    private val api = Retrofit.Builder()
         .baseUrl("https://of-test-1.samples.dev.openfabric.co")
         .client(OkHttpClient.Builder().build())
         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
         .build()
         .create(TenantApi::class.java)
-    var sdk: UnilateralSDK? = null
+    private lateinit var sdk: UnilateralSDK
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        title = "Review Payment"
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+
         setContentView(R.layout.activity_approve)
 
         val amount = intent.getDoubleExtra(INTENT_AMOUNT, 0.0)
@@ -48,15 +54,12 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         val partner = intent.getSerializableExtra(INTENT_PARTNER) as PartnerConfiguration
 
         sdk = UnilateralSDK.getInstance(partner)
-        sdk!!.setTransactionListener(this)
+        sdk.setTransactionListener(this)
 
         findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(amount) + currency
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
-            sdk!!.createTransaction()
-        }
-        findViewById<ImageView>(R.id.btnClose).setOnClickListener {
-            finish()
+            sdk.createTransaction()
         }
     }
 
@@ -79,14 +82,36 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
                 call: Call<ApproveTransactionResponse>,
                 response: Response<ApproveTransactionResponse>
             ) {
-                sdk!!.onTransactionApproved(
+                sdk.onTransactionApproved(
                     response.body()!!.card_fetch_token
                 )
             }
 
             override fun onFailure(call: Call<ApproveTransactionResponse>, t: Throwable) {
-                sdk!!.cancelTransaction()
+                sdk.cancelTransaction()
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.single_action_cancel, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_cancel -> {
+                finish()
+                true
+            }
+
+            android.R.id.home -> {
+                finish()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

@@ -2,6 +2,7 @@ package co.openfabric.tenant.sample.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
@@ -31,6 +32,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
 
     private lateinit var sdk: UnilateralSDK
+    private lateinit var webView: WebView
     private lateinit var overlayLayout: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +44,14 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val webView = findViewById<WebView>(R.id.webView)
+        webView = findViewById(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
                 "Home Credit Qwarta",
                 URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
+                "Home Credit"
             ),
             PartnerConfiguration(
                 merchant!!.accessToken,
@@ -72,7 +75,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 val intent = Intent(this, ApproveActivity::class.java)
                 intent.putExtra(INTENT_AMOUNT, amount)
                 intent.putExtra(INTENT_CURRENCY, currency)
-                intent.putExtra(INTENT_PARTNER, sdk!!.partner)
+                intent.putExtra(INTENT_PARTNER, sdk.partner)
                 startActivity(intent)
             }
 
@@ -106,6 +109,20 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 throwable.localizedMessage!!,
                 Snackbar.LENGTH_LONG
             ).show()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                if (webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    finish()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
