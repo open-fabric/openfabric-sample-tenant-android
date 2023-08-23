@@ -12,7 +12,7 @@
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/sample_image" />
+        android:src="@drawable/lazada" />
 
     <TextView
         android:id="@+id/itemTitleView"

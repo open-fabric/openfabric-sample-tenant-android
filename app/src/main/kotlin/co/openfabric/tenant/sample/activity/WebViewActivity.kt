@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
 import android.widget.Button
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
@@ -31,8 +31,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
 
     private lateinit var sdk: UnilateralSDK
-    private lateinit var overlayLayout: FrameLayout
-    private lateinit var overlayButton: Button
+    private lateinit var overlayLayout: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,13 +62,13 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         webView.loadUrl(merchant.url.toString())
 
-        setupFloatingActionButton()
+        setupOverlayButton()
     }
 
     override fun onEnterCheckoutPage(amount: Double, currency: String) {
         runOnUiThread {
-            overlayButton = findViewById(R.id.overlayButton)
-            overlayButton.setOnClickListener {
+            overlayLayout = findViewById(R.id.overlay_button)
+            overlayLayout.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
                 intent.putExtra(INTENT_AMOUNT, amount)
                 intent.putExtra(INTENT_CURRENCY, currency)
@@ -87,8 +86,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         }
     }
 
-    private fun setupFloatingActionButton() {
-        overlayLayout = findViewById(R.id.overlayLayout)
+    private fun setupOverlayButton() {
+        overlayLayout = findViewById(R.id.overlay_button)
         overlayLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {

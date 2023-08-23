@@ -56,7 +56,7 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
             logo = R.drawable.shopee
         } else {
             backgroundColor = R.color.item_background_color
-            logo = R.drawable.sample_image
+            logo = R.drawable.lazada
         }
         holder.itemView.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
         holder.itemImageView.setImageResource(logo)
