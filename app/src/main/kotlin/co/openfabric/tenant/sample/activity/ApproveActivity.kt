@@ -1,10 +1,16 @@
 package co.openfabric.tenant.sample.activity
 
+import android.animation.AnimatorInflater
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
@@ -40,7 +46,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         .build()
         .create(TenantApi::class.java)
     private lateinit var sdk: UnilateralSDK
-    private lateinit var dialog: LoadingDialog
+    private lateinit var loadingDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,14 +69,42 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
             sdk.createTransaction()
 
             // Show loading dialog, since it will take up to 10s to process the transaction
-            dialog = LoadingDialog(this)
-            dialog.show()
+            showLoadingDialog()
         }
+    }
+
+    private fun showLoadingDialog() {
+        val inflater = LayoutInflater.from(this)
+        val loadingView = inflater.inflate(R.layout.layout_loading_indicator, null, false)
+
+        loadingDialog = Dialog(this)
+        loadingDialog.setContentView(loadingView)
+        loadingDialog.setCancelable(false)
+        loadingDialog.show()
+
+        val dotIds = listOf(R.id.dot1, R.id.dot2, R.id.dot3, R.id.dot4, R.id.dot5)
+        val dancingAnimators = List(5) { AnimatorInflater.loadAnimator(this, R.animator.dance_animation) }
+
+        val handler = Handler()
+
+        dotIds.forEachIndexed { index, dotId ->
+            val dot = loadingDialog.findViewById<ImageView>(dotId)
+            val animator = dancingAnimators[index]
+
+            animator.setTarget(dot)
+
+            handler.postDelayed({ animator.start() }, (index * 100).toLong())
+        }
+    }
+
+
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
     }
 
     override fun onCardDetailsFilled() {
         runOnUiThread {
-            dialog.hide()
+            dismissLoadingDialog()
             finish()
         }
     }
