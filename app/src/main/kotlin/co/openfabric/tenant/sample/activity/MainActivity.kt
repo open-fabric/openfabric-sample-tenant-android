@@ -2,10 +2,7 @@ package co.openfabric.tenant.sample.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.adapter.GridAdapter
@@ -24,8 +21,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
-    private lateinit var toolbar: Toolbar
-    private lateinit var loadingDialog: LoadingDialog
 
     private val items = mutableListOf<Merchant>()
 
@@ -41,18 +36,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
-
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        loadingDialog = LoadingDialog(this)
-
-        val gridLayoutManager = GridLayoutManager(this, 2) // 2 columns
-        recyclerView.layoutManager = gridLayoutManager
-
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
         adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
-
 
         fetchMerchants()
     }

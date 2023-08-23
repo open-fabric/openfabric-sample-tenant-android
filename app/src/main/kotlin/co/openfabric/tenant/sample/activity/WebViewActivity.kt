@@ -33,29 +33,18 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     private lateinit var sdk: UnilateralSDK
     private lateinit var overlayLayout: FrameLayout
     private lateinit var overlayButton: Button
-    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_webview)
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        title = "Lazada"
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         val webView = findViewById<WebView>(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
-
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
-        supportActionBar?.setDisplayShowHomeEnabled(true);
-
-        toolbar.setNavigationIcon(R.drawable.ic_left)
-        toolbar.setNavigationOnClickListener(View.OnClickListener() {
-            onBackPressed()
-        })
-
-        supportActionBar?.title = intent.getStringExtra(INTENT_LABEL)
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
