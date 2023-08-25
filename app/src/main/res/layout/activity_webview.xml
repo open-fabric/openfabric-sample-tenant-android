@@ -17,20 +17,6 @@
             android:src="@drawable/homecredit_horizontal"
             android:contentDescription="@string/home_credit_logo"
             />
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="24dp"
-            android:background="@android:color/darker_gray" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="120dp"
-            android:layout_height="80dp"
-            android:src="@drawable/lazada_horizontal"
-            android:contentDescription="@string/lazada_logo"/>
     </LinearLayout>
 
     <WebView
