@@ -124,9 +124,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
                 call: Call<ApproveTransactionResponse>,
                 response: Response<ApproveTransactionResponse>
             ) {
-                sdk.onTransactionApproved(
-                    response.body()!!.card_fetch_token
-                )
+                sdk.onTransactionApproved()
             }
 
             override fun onFailure(call: Call<ApproveTransactionResponse>, t: Throwable) {
