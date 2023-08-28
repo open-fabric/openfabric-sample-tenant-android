@@ -22,6 +22,7 @@ import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
+import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import com.google.android.material.snackbar.Snackbar
 import java.net.URL
 
@@ -68,13 +69,13 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         setupOverlayButton()
     }
 
-    override fun onEnterCheckoutPage(amount: Double, currency: String) {
+    override fun onEnterCheckoutPage(transaction: ClientTransactionRequest) {
         runOnUiThread {
             overlayLayout = findViewById(R.id.overlay_button)
             overlayLayout.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
-                intent.putExtra(INTENT_AMOUNT, amount)
-                intent.putExtra(INTENT_CURRENCY, currency)
+                intent.putExtra(INTENT_AMOUNT, transaction.amount)
+                intent.putExtra(INTENT_CURRENCY, transaction.currency)
                 intent.putExtra(INTENT_PARTNER, sdk.partner)
                 startActivity(intent)
             }
