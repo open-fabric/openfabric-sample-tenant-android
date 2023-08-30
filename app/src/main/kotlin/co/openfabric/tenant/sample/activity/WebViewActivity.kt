@@ -41,12 +41,12 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         setContentView(R.layout.activity_webview)
 
-        title = "Lazada"
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         webView = findViewById(R.id.webView)
         val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
+        title = intent.getStringExtra(INTENT_LABEL)
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
@@ -56,7 +56,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             ),
             PartnerConfiguration(
                 merchant!!.accessToken,
-                Website.LAZADA
+                Website.valueOf(merchant.name.uppercase())
             ),
             webView,
             Environment.DEV
