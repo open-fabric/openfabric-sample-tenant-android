@@ -6,8 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
-import android.widget.Button
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
@@ -60,11 +58,12 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             webView,
             Environment.DEV
         )
-//        sdk.setDebug(true)
+        sdk.setDebug(true)
         sdk.setNavigationListener(this)
 
         when (merchant.name) {
-            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
+//            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
+            "Lazada" -> webView.loadUrl("https://lazada.sg/")
             "Shopee" -> webView.loadUrl("https://shopee.ph")
         }
 
