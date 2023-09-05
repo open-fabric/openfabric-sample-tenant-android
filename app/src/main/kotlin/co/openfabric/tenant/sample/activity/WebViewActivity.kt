@@ -62,8 +62,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.setNavigationListener(this)
 
         when (merchant.name) {
-//            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
-            "Lazada" -> webView.loadUrl("https://lazada.sg/")
+            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
+//            "Lazada" -> webView.loadUrl("https://lazada.sg/")
             "Shopee" -> webView.loadUrl("https://shopee.ph")
         }
 
