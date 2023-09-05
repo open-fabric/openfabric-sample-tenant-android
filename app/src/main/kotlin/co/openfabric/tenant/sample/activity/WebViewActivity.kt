@@ -29,7 +29,6 @@ import java.net.URL
 class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     companion object {
         const val INTENT_MERCHANT = "merchant"
-        const val INTENT_LABEL = "label"
     }
 
     private lateinit var sdk: UnilateralSDK
@@ -42,11 +41,11 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         setContentView(R.layout.activity_webview)
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
+        title = merchant!!.name
 
         webView = findViewById(R.id.webView)
-        val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
-        title = intent.getStringExtra(INTENT_LABEL)
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
@@ -55,7 +54,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 "Home Credit"
             ),
             PartnerConfiguration(
-                merchant!!.accessToken,
+                merchant.accessToken,
                 Website.valueOf(merchant.name.uppercase())
             ),
             webView,
@@ -64,7 +63,10 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 //        sdk.setDebug(true)
         sdk.setNavigationListener(this)
 
-        webView.loadUrl(merchant.url.toString())
+        when (merchant.name) {
+            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
+            "Shopee" -> webView.loadUrl("https://shopee.ph")
+        }
 
         setupOverlayButton()
     }

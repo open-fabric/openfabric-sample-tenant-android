@@ -34,7 +34,6 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
     private fun openWebView(context: Context, merchant: Merchant) {
         val webViewIntent = Intent(context, WebViewActivity::class.java)
         webViewIntent.putExtra(WebViewActivity.INTENT_MERCHANT, merchant)
-        webViewIntent.putExtra(WebViewActivity.INTENT_LABEL, merchant.name)
         context.startActivity(webViewIntent)
     }
 
@@ -48,15 +47,19 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
         var backgroundColor: Int
         var logo: Int
 
-        if (item.name == "Lazada") {
-            backgroundColor = R.color.lazada
-            logo = R.drawable.lazada
-        } else if (item.name == "Shopee") {
-            backgroundColor = R.color.shopee
-            logo = R.drawable.shopee
-        } else {
-            backgroundColor = R.color.item_background_color
-            logo = R.drawable.lazada
+        when (item.name) {
+            "Lazada" -> {
+                backgroundColor = R.color.lazada
+                logo = R.drawable.lazada
+            }
+            "Shopee" -> {
+                backgroundColor = R.color.shopee
+                logo = R.drawable.shopee
+            }
+            else -> {
+                backgroundColor = R.color.item_background_color
+                logo = R.drawable.lazada
+            }
         }
         holder.itemView.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
         holder.itemImageView.setImageResource(logo)
