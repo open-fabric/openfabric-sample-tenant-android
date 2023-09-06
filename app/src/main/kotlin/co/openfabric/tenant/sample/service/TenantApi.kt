@@ -27,7 +27,7 @@ data class ApproveTransactionResponse(
 
 interface TenantApi {
     @GET("/api/unilateral/partners")
-    fun getMerchants(): Call<List<Partner>>
+    fun getPartners(): Call<List<Partner>>
 
     @POST("/api/orchestrated/approve")
     fun approve(@Body request: ApproveTransactionRequest): Call<ApproveTransactionResponse>

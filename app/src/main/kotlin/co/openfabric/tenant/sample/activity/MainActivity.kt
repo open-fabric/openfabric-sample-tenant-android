@@ -40,12 +40,12 @@ class MainActivity : AppCompatActivity() {
         adapter = GridAdapter(this, items)
         recyclerView.adapter = adapter
 
-        fetchMerchants()
+        fetchPartners()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun fetchMerchants() {
-        api.getMerchants().enqueue(object : Callback<List<Partner>> {
+    private fun fetchPartners() {
+        api.getPartners().enqueue(object : Callback<List<Partner>> {
             override fun onResponse(
                 call: Call<List<Partner>>,
                 response: Response<List<Partner>>

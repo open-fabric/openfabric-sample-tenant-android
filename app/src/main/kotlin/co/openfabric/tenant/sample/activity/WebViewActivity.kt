@@ -40,8 +40,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val merchant = intent.getSerializableExtra(INTENT_PARTNER)!! as? Partner
-        title = merchant!!.name
+        val partner = intent.getSerializableExtra(INTENT_PARTNER)!! as? Partner
+        title = partner!!.name
 
         webView = findViewById(R.id.webView)
 
@@ -52,8 +52,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 "Home Credit"
             ),
             PartnerConfiguration(
-                merchant.accessToken,
-                Website.valueOf(merchant.name.uppercase())
+                partner.accessToken,
+                Website.valueOf(partner.name.uppercase())
             ),
             webView,
             Environment.DEV
@@ -61,7 +61,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.setDebug(true)
         sdk.setNavigationListener(this)
 
-        when (merchant.name) {
+        when (partner.name) {
             "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
             "Shopee" -> webView.loadUrl("https://shopee.ph")
         }

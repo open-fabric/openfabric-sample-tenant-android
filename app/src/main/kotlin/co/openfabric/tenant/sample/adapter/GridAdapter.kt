@@ -30,9 +30,9 @@ class GridAdapter(private val context: Context, private val items: List<Partner>
         }
     }
 
-    private fun openWebView(context: Context, merchant: Partner) {
+    private fun openWebView(context: Context, partner: Partner) {
         val webViewIntent = Intent(context, WebViewActivity::class.java)
-        webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, merchant)
+        webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, partner)
         context.startActivity(webViewIntent)
     }
 
