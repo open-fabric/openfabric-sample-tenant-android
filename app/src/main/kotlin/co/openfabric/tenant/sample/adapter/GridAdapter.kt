@@ -10,12 +10,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.activity.WebViewActivity
-import co.openfabric.tenant.sample.model.Merchant
+import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.unilateral.sample.R
-import kotlin.math.log
 
 
-class GridAdapter(private val context: Context, private val items: List<Merchant>) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
+class GridAdapter(private val context: Context, private val items: List<Partner>) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemImageView: ImageView = itemView.findViewById(R.id.itemImageView)
@@ -31,9 +30,9 @@ class GridAdapter(private val context: Context, private val items: List<Merchant
         }
     }
 
-    private fun openWebView(context: Context, merchant: Merchant) {
+    private fun openWebView(context: Context, merchant: Partner) {
         val webViewIntent = Intent(context, WebViewActivity::class.java)
-        webViewIntent.putExtra(WebViewActivity.INTENT_MERCHANT, merchant)
+        webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, merchant)
         context.startActivity(webViewIntent)
     }
 

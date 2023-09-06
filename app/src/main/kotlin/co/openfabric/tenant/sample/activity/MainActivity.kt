@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.openfabric.tenant.sample.adapter.GridAdapter
-import co.openfabric.tenant.sample.model.Merchant
+import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
 import com.google.android.material.snackbar.Snackbar
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
 
-    private val items = mutableListOf<Merchant>()
+    private val items = mutableListOf<Partner>()
 
     val api = Retrofit.Builder()
         .baseUrl("https://of-test-1.samples.dev.openfabric.co")
@@ -45,10 +45,10 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun fetchMerchants() {
-        api.getMerchants().enqueue(object : Callback<List<Merchant>> {
+        api.getMerchants().enqueue(object : Callback<List<Partner>> {
             override fun onResponse(
-                call: Call<List<Merchant>>,
-                response: Response<List<Merchant>>
+                call: Call<List<Partner>>,
+                response: Response<List<Partner>>
             ) {
 
                 if (response.isSuccessful) {
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<List<Merchant>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Partner>>, t: Throwable) {
                 displayError(t)
             }
         })

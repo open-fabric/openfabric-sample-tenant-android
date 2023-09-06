@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
 import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
-import co.openfabric.tenant.sample.model.Merchant
+import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.ErrorListener
@@ -26,7 +26,7 @@ import java.net.URL
 
 class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     companion object {
-        const val INTENT_MERCHANT = "merchant"
+        const val INTENT_PARTNER = "partner"
     }
 
     private lateinit var sdk: UnilateralSDK
@@ -40,7 +40,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val merchant = intent.getSerializableExtra(INTENT_MERCHANT)!! as? Merchant
+        val merchant = intent.getSerializableExtra(INTENT_PARTNER)!! as? Partner
         title = merchant!!.name
 
         webView = findViewById(R.id.webView)
@@ -63,7 +63,6 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         when (merchant.name) {
             "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
-//            "Lazada" -> webView.loadUrl("https://lazada.sg/")
             "Shopee" -> webView.loadUrl("https://shopee.ph")
         }
 
