@@ -77,6 +77,12 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         val inflater = LayoutInflater.from(this)
         val loadingView = inflater.inflate(R.layout.layout_loading_indicator, null, false)
 
+        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.shopee_horizontal)
+        } else {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.lazada_horizontal)
+        }
+
         loadingDialog = Dialog(this)
         loadingDialog.setContentView(loadingView)
         loadingDialog.setCancelable(false)
