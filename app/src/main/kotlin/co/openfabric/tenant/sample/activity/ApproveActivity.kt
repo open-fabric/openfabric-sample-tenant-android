@@ -63,8 +63,15 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         sdk = UnilateralSDK.getInstance(partner)
         sdk.setTransactionListener(this)
 
+        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
+            findViewById<TextView>(R.id.partner_name).text = "Shopee"
+        } else {
+            findViewById<TextView>(R.id.partner_name).text = "Lazada"
+        }
+
         findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(amount) + currency
+
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
 
@@ -76,6 +83,12 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
     private fun showLoadingDialog() {
         val inflater = LayoutInflater.from(this)
         val loadingView = inflater.inflate(R.layout.layout_loading_indicator, null, false)
+
+        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.shopee_horizontal)
+        } else {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.lazada_horizontal)
+        }
 
         loadingDialog = Dialog(this)
         loadingDialog.setContentView(loadingView)
