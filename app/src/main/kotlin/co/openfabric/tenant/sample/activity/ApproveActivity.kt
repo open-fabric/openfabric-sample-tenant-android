@@ -63,8 +63,15 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         sdk = UnilateralSDK.getInstance(partner)
         sdk.setTransactionListener(this)
 
+        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
+            findViewById<TextView>(R.id.partner_name).text = "Shopee"
+        } else {
+            findViewById<TextView>(R.id.partner_name).text = "Lazada"
+        }
+
         findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(amount) + currency
+
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
 
