@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private val items = mutableListOf<Partner>()
 
-    val api = Retrofit.Builder()
+    private val api: TenantApi = Retrofit.Builder()
         .baseUrl("https://of-test-1.samples.dev.openfabric.co")
         .client(OkHttpClient.Builder().build())
         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Partner>>,
                 response: Response<List<Partner>>
             ) {
-
                 if (response.isSuccessful) {
                     response.body()?.let {
                         items.addAll(it)

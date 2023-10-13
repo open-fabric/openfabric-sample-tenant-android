@@ -58,7 +58,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             webView,
             Environment.DEV
         )
-        sdk.setDebug(true)
+        sdk.setDebug(false)
         sdk.setNavigationListener(this)
 
         when (partner.name) {
