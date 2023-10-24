@@ -1,7 +1,6 @@
 package co.openfabric.tenant.sample.activity
 
 import android.animation.AnimatorInflater
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.os.Handler
@@ -21,7 +20,9 @@ import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
 import co.openfabric.unilateral.sdk.UnilateralSDK
+import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import com.google.gson.GsonBuilder
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,8 +34,7 @@ import java.text.DecimalFormat
 
 class ApproveActivity : AppCompatActivity(), TransactionListener {
     companion object {
-        const val INTENT_AMOUNT = "amount"
-        const val INTENT_CURRENCY = "currency"
+        const val INTENT_TRANSACTION = "transaction"
         const val INTENT_PARTNER = "partner"
         val CURRENCY_FORMAT = DecimalFormat("#,###.00")
     }
@@ -56,8 +56,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
 
         setContentView(R.layout.activity_approve)
 
-        val amount = intent.getDoubleExtra(INTENT_AMOUNT, 0.0)
-        val currency = intent.getStringExtra(INTENT_CURRENCY)
+        val transaction: ClientTransactionRequest = Json.decodeFromString(intent.getStringExtra(INTENT_TRANSACTION)!!)
         val partner = intent.getSerializableExtra(INTENT_PARTNER) as PartnerConfiguration
 
         sdk = UnilateralSDK.getInstance(partner)
@@ -69,8 +68,14 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
             findViewById<TextView>(R.id.partner_name).text = "Lazada"
         }
 
+        findViewById<TextView>(R.id.textSubtotalValue).text =
+            CURRENCY_FORMAT.format(transaction.transaction_details.original_amount) + transaction.currency
+
+        findViewById<TextView>(R.id.textDiscountValue).text =
+            CURRENCY_FORMAT.format(transaction.transaction_details.shipping_amount) + transaction.currency
+
         findViewById<TextView>(R.id.textTotalAmountValue).text =
-            CURRENCY_FORMAT.format(amount) + currency
+            CURRENCY_FORMAT.format(transaction.amount) + transaction.currency
 
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
@@ -103,9 +108,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         dotIds.forEachIndexed { index, dotId ->
             val dot = loadingDialog.findViewById<ImageView>(dotId)
             val animator = dancingAnimators[index]
-
             animator.setTarget(dot)
-
             handler.postDelayed({ animator.start() }, (index * 100).toLong())
         }
     }

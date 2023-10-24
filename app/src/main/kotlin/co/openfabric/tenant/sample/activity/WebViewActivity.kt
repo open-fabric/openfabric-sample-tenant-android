@@ -8,9 +8,8 @@ import android.view.ViewTreeObserver
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_AMOUNT
-import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_CURRENCY
-import co.openfabric.tenant.sample.activity.ApproveActivity.Companion.INTENT_PARTNER
+import co.openfabric.slice.apis.models.v1.apis.FullCardDetails
+import co.openfabric.slice.apis.models.v1.apis.Provider
 import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
@@ -22,6 +21,8 @@ import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.net.URL
 
 class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
@@ -74,9 +75,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             overlayLayout = findViewById(R.id.overlay_button)
             overlayLayout.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
-                intent.putExtra(INTENT_AMOUNT, transaction.amount)
-                intent.putExtra(INTENT_CURRENCY, transaction.currency)
-                intent.putExtra(INTENT_PARTNER, sdk.partner)
+                intent.putExtra(ApproveActivity.INTENT_PARTNER, sdk.partner)
+                intent.putExtra(ApproveActivity.INTENT_TRANSACTION, Json.encodeToString(transaction))
                 startActivity(intent)
             }
 
