@@ -17,7 +17,9 @@ import co.openfabric.tenant.sample.service.ApproveTransactionRequest
 import co.openfabric.tenant.sample.service.ApproveTransactionResponse
 import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
+import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.PartnerConfiguration
+import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
@@ -29,6 +31,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.URL
 import java.text.DecimalFormat
 
 
@@ -59,7 +62,15 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         val transaction: ClientTransactionRequest = Json.decodeFromString(intent.getStringExtra(INTENT_TRANSACTION)!!)
         val partner = intent.getSerializableExtra(INTENT_PARTNER) as PartnerConfiguration
 
-        sdk = UnilateralSDK.getInstance(partner)
+        sdk = UnilateralSDK.initialize(
+            TenantConfiguration(
+                "Home Credit Qwarta",
+                URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
+                "Home Credit"
+            ),
+            partner,
+            Environment.DEV
+        )
         sdk.setTransactionListener(this)
 
         if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {

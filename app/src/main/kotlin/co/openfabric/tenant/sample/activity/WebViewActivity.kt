@@ -56,9 +56,9 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 partner.accessToken,
                 Website.valueOf(partner.name.uppercase())
             ),
-            webView,
             Environment.DEV
         )
+        sdk.configure(webView)
         sdk.setDebug(false)
         sdk.setNavigationListener(this)
 
