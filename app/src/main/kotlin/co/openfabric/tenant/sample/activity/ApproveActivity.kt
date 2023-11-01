@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
 import co.openfabric.tenant.sample.service.ApproveTransactionRequest
@@ -18,6 +19,7 @@ import co.openfabric.tenant.sample.service.ApproveTransactionResponse
 import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
+import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
@@ -35,7 +37,7 @@ import java.net.URL
 import java.text.DecimalFormat
 
 
-class ApproveActivity : AppCompatActivity(), TransactionListener {
+class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener {
     companion object {
         const val INTENT_TRANSACTION = "transaction"
         const val INTENT_PARTNER = "partner"
@@ -71,7 +73,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
             partner,
             Environment.DEV
         )
+        // sdk.setDebug(true)
         sdk.setTransactionListener(this)
+        sdk.setErrorListener(this)
 
         if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
             findViewById<TextView>(R.id.partner_name).text = "Shopee"
@@ -80,13 +84,13 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
         }
 
         findViewById<TextView>(R.id.textSubtotalValue).text =
-            CURRENCY_FORMAT.format(transaction.transaction_details.original_amount) + transaction.currency
+            CURRENCY_FORMAT.format(transaction.transaction_details.original_amount) + " " + transaction.currency
 
         findViewById<TextView>(R.id.textDiscountValue).text =
-            CURRENCY_FORMAT.format(transaction.transaction_details.shipping_amount) + transaction.currency
+            CURRENCY_FORMAT.format(transaction.transaction_details.shipping_amount) + " " + transaction.currency
 
         findViewById<TextView>(R.id.textTotalAmountValue).text =
-            CURRENCY_FORMAT.format(transaction.amount) + transaction.currency
+            CURRENCY_FORMAT.format(transaction.amount) + " " + transaction.currency
 
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
@@ -137,7 +141,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
     }
 
     override fun onCreateTransactionFailed(throwable: Throwable) {
-        TODO("Not yet implemented")
+        runOnUiThread {
+            dismissLoadingDialog()
+        }
     }
 
     override fun onCreateTransactionSuccess(response: ClientTransactionResponse) {
@@ -179,6 +185,13 @@ class ApproveActivity : AppCompatActivity(), TransactionListener {
             }
 
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onError(throwable: Throwable) {
+        runOnUiThread {
+            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 }

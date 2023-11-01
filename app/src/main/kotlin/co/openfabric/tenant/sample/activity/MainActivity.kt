@@ -2,6 +2,7 @@ package co.openfabric.tenant.sample.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +10,6 @@ import co.openfabric.tenant.sample.adapter.GridAdapter
 import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.tenant.sample.service.TenantApi
 import co.openfabric.unilateral.sample.R
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -67,10 +67,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayError(throwable: Throwable) {
-        Snackbar.make(
-            findViewById(android.R.id.content),
-            throwable.localizedMessage!!,
-            Snackbar.LENGTH_LONG
-        ).show()
+        Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
     }
 }
