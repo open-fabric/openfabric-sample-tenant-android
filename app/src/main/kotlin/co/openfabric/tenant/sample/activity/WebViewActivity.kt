@@ -6,10 +6,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import co.openfabric.slice.apis.models.v1.apis.FullCardDetails
-import co.openfabric.slice.apis.models.v1.apis.Provider
 import co.openfabric.tenant.sample.service.Partner
 import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
@@ -20,7 +19,6 @@ import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URL
@@ -61,6 +59,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.configure(webView)
         sdk.setDebug(false)
         sdk.setNavigationListener(this)
+        sdk.setErrorListener(this)
 
         when (partner.name) {
             "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
@@ -68,6 +67,12 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         }
 
         setupOverlayButton()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sdk.setNavigationListener(this)
+        sdk.setErrorListener(this)
     }
 
     override fun onEnterCheckoutPage(transaction: ClientTransactionRequest) {
@@ -105,11 +110,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {
-            Snackbar.make(
-                findViewById(android.R.id.content),
-                throwable.localizedMessage!!,
-                Snackbar.LENGTH_LONG
-            ).show()
+            webView.goBack()
+            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
         }
     }
 
