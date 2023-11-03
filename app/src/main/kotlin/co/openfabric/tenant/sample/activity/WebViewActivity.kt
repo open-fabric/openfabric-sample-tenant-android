@@ -110,8 +110,10 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {
-            webView.goBack()
             Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
+//            if (webView.canGoBack()) {
+//                webView.goBack()
+//            }
         }
     }
 

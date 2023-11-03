@@ -14,6 +14,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
+import co.openfabric.slice.apis.models.v1.apis.FullCardDetails
+import co.openfabric.slice.apis.models.v1.apis.Provider
 import co.openfabric.tenant.sample.service.ApproveTransactionRequest
 import co.openfabric.tenant.sample.service.ApproveTransactionResponse
 import co.openfabric.tenant.sample.service.TenantApi
@@ -73,7 +75,17 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             partner,
             Environment.DEV
         )
-        // sdk.setDebug(true)
+        sdk.setDebug(true)
+//         sdk.setTestCard(FullCardDetails(
+//             provider = Provider.mastercard,
+//             card_reference_id = "",
+//             card_number = "",
+//             cvv = "",
+//             expiry_year = "24",
+//             expiry_month = "01",
+//             message = "S",
+//             redacted_number = ""
+//         ))
         sdk.setTransactionListener(this)
         sdk.setErrorListener(this)
 
@@ -191,7 +203,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
     override fun onError(throwable: Throwable) {
         runOnUiThread {
             Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
-            finish()
+//            finish()
         }
     }
 }
