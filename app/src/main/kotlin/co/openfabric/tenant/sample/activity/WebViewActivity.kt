@@ -34,7 +34,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        WebView.setWebContentsDebuggingEnabled(true)
         setContentView(R.layout.activity_webview)
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -46,9 +46,9 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
-                "Home Credit Qwarta",
-                URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                "Home Credit"
+                "Flip",
+                URL("https://storage.googleapis.com/dot-flip-dev/media-library/logo_lg_430b708631/logo_lg_430b708631.svg"),
+                "Flip Indonesia"
             ),
             PartnerConfiguration(
                 partner.accessToken,
@@ -62,8 +62,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.setErrorListener(this)
 
         when (partner.name) {
-            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
-            "Shopee" -> webView.loadUrl("https://shopee.ph")
+            "Lazada" -> webView.loadUrl("https://www.lazada.co.id")
+            "Shopee" -> webView.loadUrl("https://shopee.co.id")
         }
 
         setupOverlayButton()

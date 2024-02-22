@@ -13,11 +13,11 @@
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/imageHC"
+            android:id="@+id/bnplImage"
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/homecredit_horizontal" />
+            android:src="@drawable/flip" />
 
         <ImageView
             android:id="@+id/imageLZD"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/imageHC"
+            android:layout_toEndOf="@id/bnplImage"
             android:layout_toStartOf="@id/imageLZD"
             android:gravity="center_horizontal"
             android:orientation="horizontal">

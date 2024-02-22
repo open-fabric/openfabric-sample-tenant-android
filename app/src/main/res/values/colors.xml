@@ -7,6 +7,7 @@
     <color name="white">#FFFFFF</color>
     <color name="item_background_color">#2CA472</color>
     <color name="success">#00A933</color>
+    <color name="flip">#fc6442</color>
     <color name="lazada">#9100FF</color>
     <color name="shopee">#FFA200</color>
 </resources>

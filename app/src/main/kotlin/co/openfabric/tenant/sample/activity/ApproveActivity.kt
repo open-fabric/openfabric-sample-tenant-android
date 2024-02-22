@@ -68,14 +68,14 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
 
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
-                "Home Credit Qwarta",
-                URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                "Home Credit"
+                "Flip",
+                URL("https://storage.googleapis.com/dot-flip-dev/media-library/logo_lg_430b708631/logo_lg_430b708631.svg"),
+                "Flip Indonesia"
             ),
             partner,
             Environment.DEV
         )
-        sdk.setDebug(true)
+        sdk.setDebug(false)
 //         sdk.setTestCard(FullCardDetails(
 //             provider = Provider.mastercard,
 //             card_reference_id = "",

@@ -18,6 +18,8 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="home_credit_logo">Home Credit Logo</string>
     <string name="home_credit">Home Credit</string>
+    <string name="flip_logo">Flip Logo</string>
+    <string name="flip">Flip</string>
     <string name="lazada_logo">Lazada logo</string>
     <string name="call_to_action_text">Tap here to pay with</string>
     <string name="action_cancel">Cancel</string>
