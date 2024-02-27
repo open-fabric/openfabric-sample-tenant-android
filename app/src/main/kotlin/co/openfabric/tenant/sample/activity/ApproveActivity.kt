@@ -10,6 +10,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +39,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URL
 import java.text.DecimalFormat
+import kotlin.math.round
 
 
 class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener {
@@ -58,10 +61,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = "Review Payment"
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setContentView(R.layout.activity_approve)
+        setContentView(R.layout.activity_approve_app)
 
         val transaction: ClientTransactionRequest = Json.decodeFromString(intent.getStringExtra(INTENT_TRANSACTION)!!)
         val partner = intent.getSerializableExtra(INTENT_PARTNER) as PartnerConfiguration
@@ -75,7 +77,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             partner,
             Environment.DEV
         )
-        sdk.setDebug(true)
+        sdk.setDebug(false)
 //         sdk.setTestCard(FullCardDetails(
 //             provider = Provider.mastercard,
 //             card_reference_id = "",
@@ -90,19 +92,39 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
         sdk.setErrorListener(this)
 
         if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
-            findViewById<TextView>(R.id.partner_name).text = "Shopee"
+//            findViewById<TextView>(R.id.partner_name).text = "Shopee"
+            title = "Shopee"
         } else {
-            findViewById<TextView>(R.id.partner_name).text = "Lazada"
+//            findViewById<TextView>(R.id.partner_name).text = "Lazada"
+            title = "Lazada"
         }
-
-        findViewById<TextView>(R.id.textSubtotalValue).text =
-            CURRENCY_FORMAT.format(transaction.transaction_details.original_amount) + " " + transaction.currency
-
-        findViewById<TextView>(R.id.textDiscountValue).text =
-            CURRENCY_FORMAT.format(transaction.transaction_details.shipping_amount) + " " + transaction.currency
 
         findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(transaction.amount) + " " + transaction.currency
+        findViewById<TextView>(R.id.textTotalAmountValueApp).text =
+            CURRENCY_FORMAT.format(transaction.amount) + " " + transaction.currency
+        val txnDetailsContainer: LinearLayout = findViewById<LinearLayout>(R.id.transaction_details_app)
+
+        transaction.transaction_details?.items?.forEach { item ->
+            val transactionLayout = LayoutInflater.from(this).inflate(R.layout.transaction_details, null) as LinearLayout
+            val itemName = if (item.name.length > 20) item.name.substring(0, 20) + "..." else item.name
+
+            transactionLayout.findViewById<TextView>(R.id.item_name).text = itemName
+            transactionLayout.findViewById<TextView>(R.id.item_quantity).text = item.quantity.toString() + "x"
+            transactionLayout.findViewById<TextView>(R.id.item_total_price).text = (item.quantity * item.price).toString() + " " + transaction.currency
+
+            txnDetailsContainer.addView(transactionLayout);
+        }
+
+        val transactionLayout = LayoutInflater.from(this).inflate(R.layout.transaction_details, null) as LinearLayout
+        transactionLayout.findViewById<TextView>(R.id.item_name).text = "Shipping Fee"
+        transactionLayout.findViewById<TextView>(R.id.item_total_price).text = (transaction.transaction_details.shipping_amount).toString() + " " + transaction.currency
+        txnDetailsContainer.addView(transactionLayout);
+
+        val paymentInstallment = round(transaction.amount /  3).toString() + " " + transaction.currency
+        findViewById<TextView>(R.id.installment_one).text = paymentInstallment
+        findViewById<TextView>(R.id.installment_two).text = paymentInstallment
+        findViewById<TextView>(R.id.installment_three).text = paymentInstallment
 
         findViewById<Button>(R.id.btnConfirmPayment).setOnClickListener {
             sdk.createTransaction()
@@ -205,5 +227,17 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
 //            finish()
         }
+    }
+
+    override fun onTransactionFailed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onTransactionStatusUnknown() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onTransactionSuccess() {
+        TODO("Not yet implemented")
     }
 }

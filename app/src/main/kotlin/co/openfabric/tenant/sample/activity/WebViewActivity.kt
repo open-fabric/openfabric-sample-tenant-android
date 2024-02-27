@@ -2,10 +2,15 @@ package co.openfabric.tenant.sample.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
+import android.widget.FrameLayout
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -34,7 +39,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setContentView(R.layout.activity_webview)
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -43,12 +48,11 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         title = partner!!.name
 
         webView = findViewById(R.id.webView)
-
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
-                "Home Credit Qwarta",
-                URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                "Home Credit"
+                "Flash Pay",
+                URL("https://svgshare.com/i/13f5.svg"),
+                "Flash Pay"
             ),
             PartnerConfiguration(
                 partner.accessToken,
@@ -78,14 +82,16 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     override fun onEnterCheckoutPage(transaction: ClientTransactionRequest) {
         runOnUiThread {
             overlayLayout = findViewById(R.id.overlay_button)
+
             overlayLayout.setOnClickListener {
                 val intent = Intent(this, ApproveActivity::class.java)
                 intent.putExtra(ApproveActivity.INTENT_PARTNER, sdk.partner)
                 intent.putExtra(ApproveActivity.INTENT_TRANSACTION, Json.encodeToString(transaction))
                 startActivity(intent)
             }
-
+            overlayLayout.alpha = 0f
             overlayLayout.visibility = View.VISIBLE
+            overlayLayout.animate().alpha(1.0f).setDuration(700)
         }
     }
 
@@ -110,18 +116,33 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {
-            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
 //            if (webView.canGoBack()) {
 //                webView.goBack()
 //            }
         }
     }
 
+    override fun onPageStarted() {
+        val progressBar = findViewById<ProgressBar>(R.id.progress_loader)
+        progressBar.visibility = View.VISIBLE
+    }
+    override fun onPageFinished() {
+        val progressBar = findViewById<ProgressBar>(R.id.progress_loader)
+        progressBar.visibility = View.INVISIBLE
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.removeItem(android.R.id.home)
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.custom_back_button, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
+                R.id.custom_back_button -> {
                 if (webView.canGoBack()) {
-                    webView.goBack()
+                    webView.destroy()
                 } else {
                     finish()
                 }

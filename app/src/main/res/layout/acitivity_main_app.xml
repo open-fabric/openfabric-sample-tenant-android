@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="co.openfabric.tenant.sample.activity.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="376dp"
+            android:src="@drawable/upper_app" />
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Banner Scroller"
+            android:scrollbarAlwaysDrawHorizontalTrack="false"
+            android:scrollbars="none"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/lazada_button"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@color/white"
+                    android:src="@drawable/lazada_carousel" />
+
+                <ImageView
+                    android:id="@+id/shopee_button"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@color/white"
+                    android:src="@drawable/shopee_carousel" />
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="1250dp"
+            android:src="@drawable/lower_app" />
+    </LinearLayout>
+
+</RelativeLayout>

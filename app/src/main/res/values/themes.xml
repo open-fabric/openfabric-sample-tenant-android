@@ -1,5 +1,5 @@
 <resources>
     <style name="App.Theme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/flash_pay</item>
     </style>
 </resources>

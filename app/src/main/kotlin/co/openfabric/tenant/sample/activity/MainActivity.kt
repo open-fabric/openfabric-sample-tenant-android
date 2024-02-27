@@ -1,7 +1,10 @@
 package co.openfabric.tenant.sample.activity
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,18 +36,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+        setContentView(R.layout.acitivity_main_app)
 
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
         adapter = GridAdapter(this, items)
-        recyclerView.adapter = adapter
 
-        fetchPartners()
+        fetchPartners(this)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun fetchPartners() {
+    private fun fetchPartners(context: Context) {
         api.getPartners().enqueue(object : Callback<List<Partner>> {
             override fun onResponse(
                 call: Call<List<Partner>>,
@@ -53,7 +54,22 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         items.addAll(it)
-                        adapter.notifyDataSetChanged()
+                        val lazadaButton = findViewById<ImageView>(R.id.lazada_button)
+                        val lazada = it.find { partner ->  partner.name == "Lazada" }
+                        lazadaButton.setOnClickListener {
+                            val webViewIntent = Intent(context, WebViewActivity::class.java)
+                            webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, lazada)
+                            context.startActivity(webViewIntent)
+                        }
+
+                        val shopeeButton = findViewById<ImageView>(R.id.shopee_button)
+                        val shopee = it.find { partner -> partner.name == "Shopee" }
+
+                        shopeeButton.setOnClickListener {
+                            val webViewIntent = Intent(context, WebViewActivity::class.java)
+                            webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, shopee)
+                            context.startActivity(webViewIntent)
+                        }
                     }
                 } else {
                     displayError(RuntimeException("Error response: ${response.code()}"))
