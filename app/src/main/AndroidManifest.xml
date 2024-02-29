@@ -39,6 +39,10 @@
             android:name="co.openfabric.tenant.sample.activity.ApproveActivity"
             android:exported="false"
             android:parentActivityName="co.openfabric.tenant.sample.activity.WebViewActivity" />
+        <activity
+            android:name="co.openfabric.tenant.sample.activity.PurchaseCompleteActivity"
+            android:exported="false"
+            android:parentActivityName="co.openfabric.tenant.sample.activity.WebViewActivity" />
     </application>
 
 </manifest>

@@ -12,6 +12,9 @@ import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import co.openfabric.tenant.sample.service.Partner
@@ -37,6 +40,10 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     private lateinit var webView: WebView
     private lateinit var overlayLayout: CardView
 
+    private var onPurchaseCompleteActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        webView.destroy()
+        finish()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -48,6 +55,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         title = partner!!.name
 
         webView = findViewById(R.id.webView)
+        WebView.setWebContentsDebuggingEnabled(true)
         sdk = UnilateralSDK.initialize(
             TenantConfiguration(
                 "Flash Pay",
@@ -60,8 +68,8 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             ),
             Environment.DEV
         )
-        sdk.configure(webView)
-        sdk.setDebug(false)
+        sdk.configure(this, webView)
+        sdk.setDebug(true)
         sdk.setNavigationListener(this)
         sdk.setErrorListener(this)
 
@@ -79,7 +87,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         sdk.setErrorListener(this)
     }
 
-    override fun onEnterCheckoutPage(transaction: ClientTransactionRequest) {
+    override fun onCheckoutPageFinished(transaction: ClientTransactionRequest) {
         runOnUiThread {
             overlayLayout = findViewById(R.id.overlay_button)
 
@@ -116,14 +124,14 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     }
     override fun onError(throwable: Throwable) {
         runOnUiThread {
-//            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
 //            if (webView.canGoBack()) {
 //                webView.goBack()
 //            }
         }
     }
 
-    override fun onPageStarted() {
+    override fun onEnterCheckoutPage() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_loader)
         progressBar.visibility = View.VISIBLE
     }
@@ -141,14 +149,16 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
                 R.id.custom_back_button -> {
-                if (webView.canGoBack()) {
                     webView.destroy()
-                } else {
                     finish()
-                }
-                true
+                    true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onPurchaseCompletePage() {
+        val purchaseCompleteIntent = Intent(this, PurchaseCompleteActivity::class.java)
+        onPurchaseCompleteActivityLauncher.launch(purchaseCompleteIntent)
     }
 }

@@ -28,6 +28,7 @@ import co.openfabric.unilateral.sdk.PartnerConfiguration
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
 import co.openfabric.unilateral.sdk.UnilateralSDK
+import co.openfabric.unilateral.sdk.Website
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import com.google.gson.GsonBuilder
 import kotlinx.serialization.json.Json
@@ -227,17 +228,5 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
 //            finish()
         }
-    }
-
-    override fun onTransactionFailed() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onTransactionStatusUnknown() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onTransactionSuccess() {
-        TODO("Not yet implemented")
     }
 }
