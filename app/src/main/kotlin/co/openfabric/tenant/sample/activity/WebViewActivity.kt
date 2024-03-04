@@ -23,6 +23,7 @@ import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.NavigationListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
+import co.openfabric.unilateral.sdk.Region
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
 import co.openfabric.unilateral.sdk.Website
@@ -60,6 +61,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             TenantConfiguration(
                 "Flash Pay",
                 URL("https://svgshare.com/i/13f5.svg"),
+                Region.PHILIPPINES,
                 "Flash Pay"
             ),
             PartnerConfiguration(
@@ -69,7 +71,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             Environment.DEV
         )
         sdk.configure(this, webView)
-        sdk.setDebug(true)
+        sdk.setDebug(false)
         sdk.setNavigationListener(this)
         sdk.setErrorListener(this)
 

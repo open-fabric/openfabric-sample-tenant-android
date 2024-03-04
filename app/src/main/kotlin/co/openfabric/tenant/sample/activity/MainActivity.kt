@@ -22,7 +22,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GridAdapter
 
     private val items = mutableListOf<Partner>()

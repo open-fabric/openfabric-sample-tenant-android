@@ -25,6 +25,7 @@ import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
+import co.openfabric.unilateral.sdk.Region
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
 import co.openfabric.unilateral.sdk.UnilateralSDK
@@ -73,6 +74,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             TenantConfiguration(
                 "Home Credit Qwarta",
                 URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
+                Region.PHILIPPINES,
                 "Home Credit"
             ),
             partner,
