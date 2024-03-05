@@ -17,7 +17,7 @@
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/homecredit_horizontal" />
+            android:src="@drawable/flash_pay" />
 
         <ImageView
             android:id="@+id/imageLZD"
@@ -85,7 +85,7 @@
         android:layout_gravity="center"
         android:gravity="center_horizontal"
         android:paddingHorizontal="40dp"
-        android:text="You will be automatically redirected in a few seconds. Taking too long!"
+        android:text="You will be automatically redirected in a few seconds."
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 </LinearLayout>
