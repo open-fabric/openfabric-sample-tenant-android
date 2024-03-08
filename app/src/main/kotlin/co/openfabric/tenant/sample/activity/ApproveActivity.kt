@@ -16,8 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
-import co.openfabric.slice.apis.models.v1.apis.FullCardDetails
-import co.openfabric.slice.apis.models.v1.apis.Provider
 import co.openfabric.tenant.sample.service.ApproveTransactionRequest
 import co.openfabric.tenant.sample.service.ApproveTransactionResponse
 import co.openfabric.tenant.sample.service.TenantApi
@@ -25,11 +23,9 @@ import co.openfabric.unilateral.sample.R
 import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
-import co.openfabric.unilateral.sdk.Region
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.TransactionListener
 import co.openfabric.unilateral.sdk.UnilateralSDK
-import co.openfabric.unilateral.sdk.Website
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import com.google.gson.GsonBuilder
 import kotlinx.serialization.json.Json
@@ -64,7 +60,6 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
         super.onCreate(savedInstanceState)
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
-
         setContentView(R.layout.activity_approve_app)
 
         val transaction: ClientTransactionRequest = Json.decodeFromString(intent.getStringExtra(INTENT_TRANSACTION)!!)
@@ -74,10 +69,13 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             TenantConfiguration(
                 "Home Credit Qwarta",
                 URL("https://chatbot.homecredit.ph/assets/visual/icons/smile-logo_outline.svg"),
-                Region.PHILIPPINES,
+                "PH",
                 "Home Credit"
             ),
-            partner,
+            PartnerConfiguration(
+                partner.accessToken,
+                "lazada"
+            ),
             Environment.DEV
         )
         sdk.setDebug(false)
@@ -94,11 +92,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
         sdk.setTransactionListener(this)
         sdk.setErrorListener(this)
 
-        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
-//            findViewById<TextView>(R.id.partner_name).text = "Shopee"
+        if (sdk.partner.website == "shopee") {
             title = "Shopee"
         } else {
-//            findViewById<TextView>(R.id.partner_name).text = "Lazada"
             title = "Lazada"
         }
 
@@ -141,7 +137,7 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
         val inflater = LayoutInflater.from(this)
         val loadingView = inflater.inflate(R.layout.layout_loading_indicator, null, false)
 
-        if (sdk.partner.website == co.openfabric.unilateral.sdk.Website.SHOPEE) {
+        if (sdk.partner.website == "shopee") {
             loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.shopee_horizontal)
         } else {
             loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.lazada_horizontal)
