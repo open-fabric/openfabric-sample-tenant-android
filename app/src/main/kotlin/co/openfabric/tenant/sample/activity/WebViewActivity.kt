@@ -8,12 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import android.webkit.WebView
-import android.widget.FrameLayout
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -23,10 +19,8 @@ import co.openfabric.unilateral.sdk.Environment
 import co.openfabric.unilateral.sdk.ErrorListener
 import co.openfabric.unilateral.sdk.NavigationListener
 import co.openfabric.unilateral.sdk.PartnerConfiguration
-import co.openfabric.unilateral.sdk.Region
 import co.openfabric.unilateral.sdk.TenantConfiguration
 import co.openfabric.unilateral.sdk.UnilateralSDK
-import co.openfabric.unilateral.sdk.Website
 import co.openfabric.unilateral.sdk.models.apis.ClientTransactionRequest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -51,7 +45,6 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
         setContentView(R.layout.activity_webview)
 
         actionBar?.setDisplayHomeAsUpEnabled(true)
-
         val partner = intent.getSerializableExtra(INTENT_PARTNER)!! as? Partner
         title = partner!!.name
 
@@ -61,12 +54,12 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             TenantConfiguration(
                 "Flash Pay",
                 URL("https://svgshare.com/i/13f5.svg"),
-                Region.PHILIPPINES,
+                "PH",
                 "Flash Pay"
             ),
             PartnerConfiguration(
                 partner.accessToken,
-                Website.valueOf(partner.name.uppercase())
+                "lazada"
             ),
             Environment.DEV
         )
