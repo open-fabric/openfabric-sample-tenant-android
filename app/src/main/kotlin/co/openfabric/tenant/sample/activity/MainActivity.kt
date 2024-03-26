@@ -20,6 +20,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.InvalidParameterException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var adapter: GridAdapter
@@ -51,22 +52,12 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<Partner>>
             ) {
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        items.addAll(it)
-                        val lazadaButton = findViewById<ImageView>(R.id.lazada_button)
-                        val lazada = it.find { partner ->  partner.name == "Lazada" }
-                        lazadaButton.setOnClickListener {
+                    response.body()?.forEach { partner ->
+                        items.add(partner)
+                        val button = getPartnerButton(partner.name)
+                        button.setOnClickListener {
                             val webViewIntent = Intent(context, WebViewActivity::class.java)
-                            webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, lazada)
-                            context.startActivity(webViewIntent)
-                        }
-
-                        val shopeeButton = findViewById<ImageView>(R.id.shopee_button)
-                        val shopee = it.find { partner -> partner.name == "Shopee" }
-
-                        shopeeButton.setOnClickListener {
-                            val webViewIntent = Intent(context, WebViewActivity::class.java)
-                            webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, shopee)
+                            webViewIntent.putExtra(WebViewActivity.INTENT_PARTNER, partner)
                             context.startActivity(webViewIntent)
                         }
                     }
@@ -83,5 +74,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayError(throwable: Throwable) {
         Toast.makeText(this, "Error: ${throwable.message}", Toast.LENGTH_LONG).show()
+    }
+
+    private fun getPartnerButton(partner: String): ImageView {
+        return when (partner) {
+            "Lazada" -> findViewById<ImageView>(R.id.lazada_button)
+            "Shopee" -> findViewById<ImageView>(R.id.shopee_button)
+            "Tokopedia" -> findViewById<ImageView>(R.id.tokopedia_button)
+            "Bukalapak" -> findViewById<ImageView>(R.id.bukalapak_button)
+            else -> throw InvalidParameterException()
+        }
     }
 }
