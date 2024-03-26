@@ -33,6 +33,22 @@ tools:context="co.openfabric.tenant.sample.activity.MainActivity">
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/bukalapak_button"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@color/white"
+                    android:src="@drawable/bukalapak_carousel" />
+
+                <ImageView
+                    android:id="@+id/tokopedia_button"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@color/white"
+                    android:src="@drawable/tokopedia_carousel" />
+
+                <ImageView
                     android:id="@+id/lazada_button"
                     android:layout_width="350dp"
                     android:layout_height="200dp"

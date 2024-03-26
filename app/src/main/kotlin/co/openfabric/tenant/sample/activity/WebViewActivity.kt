@@ -54,23 +54,25 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
             TenantConfiguration(
                 "Flash Pay",
                 URL("https://svgshare.com/i/13f5.svg"),
-                "PH",
+                "ID",
                 "Flash Pay"
             ),
             PartnerConfiguration(
                 partner.accessToken,
-                "lazada"
+                partner.name.lowercase()
             ),
             Environment.DEV
         )
         sdk.configure(this, webView)
-        sdk.setDebug(false)
+        sdk.setDebug(true)
         sdk.setNavigationListener(this)
         sdk.setErrorListener(this)
 
         when (partner.name) {
-            "Lazada" -> webView.loadUrl("https://www.lazada.com.ph/")
-            "Shopee" -> webView.loadUrl("https://shopee.ph")
+            "Lazada" -> webView.loadUrl("https://www.lazada.co.id/")
+            "Shopee" -> webView.loadUrl("https://shopee.co.id")
+            "Bukalapak" -> webView.loadUrl("https://www.bukalapak.com")
+            "Tokopedia" -> webView.loadUrl("https://www.tokopedia.com")
         }
 
         setupOverlayButton()
@@ -92,9 +94,7 @@ class WebViewActivity : AppCompatActivity(), NavigationListener, ErrorListener {
                 intent.putExtra(ApproveActivity.INTENT_TRANSACTION, Json.encodeToString(transaction))
                 startActivity(intent)
             }
-            overlayLayout.alpha = 0f
             overlayLayout.visibility = View.VISIBLE
-            overlayLayout.animate().alpha(1.0f).setDuration(700)
         }
     }
 

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -16,6 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import co.openfabric.slice.apis.models.v1.apis.ClientTransactionResponse
+import co.openfabric.slice.apis.models.v1.apis.FullCardDetails
+import co.openfabric.slice.apis.models.v1.apis.Provider
 import co.openfabric.tenant.sample.service.ApproveTransactionRequest
 import co.openfabric.tenant.sample.service.ApproveTransactionResponse
 import co.openfabric.tenant.sample.service.TenantApi
@@ -74,11 +77,11 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
             ),
             PartnerConfiguration(
                 partner.accessToken,
-                "lazada"
+                partner.website.lowercase()
             ),
             Environment.DEV
         )
-        sdk.setDebug(false)
+        sdk.setDebug(true)
 //         sdk.setTestCard(FullCardDetails(
 //             provider = Provider.mastercard,
 //             card_reference_id = "",
@@ -92,12 +95,9 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
         sdk.setTransactionListener(this)
         sdk.setErrorListener(this)
 
-        if (sdk.partner.website == "shopee") {
-            title = "Shopee"
-        } else {
-            title = "Lazada"
-        }
+        title = partner.website
 
+        findViewById<TextView>(R.id.approve_partner_name).text = title
         findViewById<TextView>(R.id.textTotalAmountValue).text =
             CURRENCY_FORMAT.format(transaction.amount) + " " + transaction.currency
         findViewById<TextView>(R.id.textTotalAmountValueApp).text =
@@ -139,8 +139,12 @@ class ApproveActivity : AppCompatActivity(), TransactionListener, ErrorListener 
 
         if (sdk.partner.website == "shopee") {
             loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.shopee_horizontal)
-        } else {
+        } else if (sdk.partner.website == "lazada") {
             loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.lazada_horizontal)
+        } else if (sdk.partner.website == "bukalapak") {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.bukalapak_horizontal)
+        } else if (sdk.partner.website == "tokopedia") {
+            loadingView.findViewById<ImageView>(R.id.imageLZD).setImageResource(R.drawable.tokopedia_horizontal)
         }
 
         loadingDialog = Dialog(this)
